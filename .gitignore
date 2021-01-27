@@ -172,4 +172,5 @@ lib/generated_plugin_registrant.dart
 ###############################################################
 
 # my own ibgnore tags
-.pem 
+*.pem 
+*.jks
