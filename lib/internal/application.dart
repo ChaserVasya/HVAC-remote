@@ -23,7 +23,7 @@ class Application extends StatelessWidget {
       child: MaterialApp(
         title: 'MQTT Testing',
         routes: _generateRoutes(),
-        initialRoute: pageNames[Pages.PidPage],
+        initialRoute: pageNames[Pages.PasswordPage],
       ),
     );
   }
