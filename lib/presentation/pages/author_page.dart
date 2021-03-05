@@ -13,9 +13,8 @@ class AuthorPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('''
-            ${authorPageState.authorPageData.author}
-            ${authorPageState.authorPageData.license}''', textAlign: TextAlign.center),
+            Text(authorPageState.authorPageData.author, textAlign: TextAlign.center),
+            Text(authorPageState.authorPageData.license, textAlign: TextAlign.center),
           ],
         ),
       ),
