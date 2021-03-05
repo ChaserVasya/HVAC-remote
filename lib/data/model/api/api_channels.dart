@@ -9,7 +9,7 @@ import 'package:my_mqtt/data/model/pid_page_data.dart';
 
 class ApiChannels {
   final _MqttCallBacks _mqttCallbacks = _MqttCallBacks();
-  final _GoogleMqttConfiguration _mqttConf = _GoogleMqttConfiguration();
+  final _GoogleMqttConfiguration _mqttConfig = _GoogleMqttConfiguration();
   final SecurityContext _securityContext = SecurityContext.defaultContext;
 
   final String _rootsFileAddress = 'assets/roots/roots.pem';
@@ -17,7 +17,6 @@ class ApiChannels {
 
   JsonWebKey _key;
   MqttServerClient _client;
-
   Future<void> _init;
 
   static final ApiChannels _apiChannels = ApiChannels._();
@@ -25,19 +24,20 @@ class ApiChannels {
   //An instance of this class has a long initialization because of
   //many Future-members.  So, factory improves perfomance because
   //initialization is made once.
+  //Also, the best way to check _init process is a "await _init"
+  //in begin of methods
   factory ApiChannels() => _apiChannels;
 
   ApiChannels._() {
-    _client = MqttServerClient(_mqttConf.url, _mqttConf.clientID);
+    _client = MqttServerClient(_mqttConfig.url, _mqttConfig.clientID);
     _init = _asynclyLoadFiles().whenComplete(() {
       _client
-        ..port = _mqttConf.port
+        ..port = _mqttConfig.port
         ..secure = true
         ..securityContext = _securityContext
         ..setProtocolV311()
-        ..logging(on: _mqttConf.logsAreNeeded);
+        ..logging(on: _mqttConfig.logsAreNeeded);
       _client = _mqttCallbacks.addCallbacks(_client);
-      receiveChannelValues();
     });
   }
 
@@ -48,31 +48,45 @@ class ApiChannels {
 
   void _onData(List<MqttReceivedMessage<MqttMessage>> rawData) {
     for (var message in rawData) {
-      final data = message.payload.toString();
-      _printWithFrame('Data: $data');
+      // there are not receive-classes havent payload
+      final MqttPublishMessage recMess = message.payload;
+      final payloadAsBytes = recMess.payload.message.buffer.asByteData();
+
+      _printWithFrame('${payloadAsBytes.lengthInBytes}');
+      int doubleCounter = 0;
+      final int bytesPerDouble = 8;
+      final Map<Channel, double> newChannelValues = {};
+      for (Channel channel in Channel.values) {
+        int byteOffset = doubleCounter * bytesPerDouble;
+        newChannelValues[channel] = (byteOffset + bytesPerDouble <= payloadAsBytes.lengthInBytes)
+            ? payloadAsBytes.getFloat64(byteOffset)
+            : null;
+        doubleCounter++;
+      }
+      _printWithFrame('Data: $newChannelValues');
     }
   }
 
   Future<void> receiveChannelValues() async {
     await _init;
-    final String password = _createJWTforGoogleIot(_mqttConf, _key);
-    await _client.connect(_mqttConf.username, password);
-    _client.subscribe(_mqttConf.testTopic, _mqttConf.qosLevel);
+    final String password = _createJWTforGoogleIot(_mqttConfig, _key);
+    await _client.connect(_mqttConfig.username, password);
+    _client.subscribe(_mqttConfig.testTopic, _mqttConfig.qosLevel);
     _client.updates.listen(_onData, onError: _mqttCallbacks.onError, onDone: _mqttCallbacks.onDone);
-    await MqttUtilities.asyncSleep(1);
+    await MqttUtilities.asyncSleep(20);
     _client.disconnect();
   }
 
   Future<void> sendChannelValues(Map<Channel, double> channelValues) async {
     await _init;
-    final String password = _createJWTforGoogleIot(_mqttConf, _key);
-    await _client.connect(_mqttConf.username, password);
+    final String password = _createJWTforGoogleIot(_mqttConfig, _key);
+    await _client.connect(_mqttConfig.username, password);
     final MqttClientPayloadBuilder payloadBuilder = MqttClientPayloadBuilder();
     for (Channel channel in Channel.values) {
       payloadBuilder.addDouble(channelValues[channel]);
     }
-    _client.publishMessage(_mqttConf.eventTopic, _mqttConf.qosLevel, payloadBuilder.payload, retain: true);
-    await MqttUtilities.asyncSleep(5);
+    _client.publishMessage(_mqttConfig.eventTopic, _mqttConfig.qosLevel, payloadBuilder.payload, retain: true);
+    await MqttUtilities.asyncSleep(60);
     _client.disconnect();
   }
 }
@@ -162,13 +176,13 @@ void _printWithFrame(String text) {
   print('$equals $text $equals');
 }
 
-String _createJWTforGoogleIot(_GoogleMqttConfiguration _mqttConf, JsonWebKey key) {
+String _createJWTforGoogleIot(_GoogleMqttConfiguration _mqttConfig, JsonWebKey key) {
   final int secondsPerDay = 86400; //max exp.  https://cloud.google.com/iot/docs/how-tos/credentials/jwts
   final int millisecondsPerSecond = 1000;
 
   JsonWebTokenClaims claims = JsonWebTokenClaims.fromJson(
     {
-      "aud": _mqttConf.projectID,
+      "aud": _mqttConfig.projectID,
       "iat": (DateTime.now().millisecondsSinceEpoch) ~/ millisecondsPerSecond, //unix time
       "exp": ((DateTime.now().millisecondsSinceEpoch) ~/ millisecondsPerSecond) + secondsPerDay,
     },

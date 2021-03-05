@@ -11,7 +11,6 @@ class PidPageData {
 
   PidPageData.testData() {
     _apiChannels = ApiChannels();
-    print('===== API INITIALIZED IN DATA ======');
     Random randomNumberGenerator = Random();
 
     for (Channel channel in Channel.values) {
