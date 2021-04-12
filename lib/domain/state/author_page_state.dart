@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:my_mqtt/data/model/author_page_data.dart';
+import 'package:my_mqtt/data/author_page_data.dart';
 
-class AuthorPageState with ChangeNotifier {
+class AuthorPageState extends ChangeNotifier {
   AuthorPageData authorPageData = AuthorPageData();
 }

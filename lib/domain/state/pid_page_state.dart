@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_mqtt/data/model/pid_page_data.dart';
+import 'package:my_mqtt/data/api/mqtt/mqtt_api.dart';
+
+import 'package:my_mqtt/data/pid_page_data.dart';
 import 'package:my_mqtt/domain/pid_validator.dart';
 
 class PidPageState with ChangeNotifier {
@@ -12,8 +14,11 @@ class PidPageState with ChangeNotifier {
     _validator = PidValidator();
     validatorFunction = (text) => _validator.validate(text);
     _checkInputsAreValid();
-    buttonAction = _changeChannelValues;
+    //buttonAction = _changeChannelValues;
+    buttonAction = _testFunction;
   }
+
+  _TestCommandState testCommandState = _TestCommandState();
 
   PidValidator _validator;
   PidPageData _pidPageData = PidPageData.testData();
@@ -25,9 +30,7 @@ class PidPageState with ChangeNotifier {
 
   get channels => _pidPageData.channels;
 
-  void _changeChannelValues() {
-    _pidPageData.receiveChannelValues().whenComplete(() => notifyListeners());
-
+  void _changeChannelValues() async {
     _checkInputsAreValid();
     if (allInputsAreValid) {
       Map<Channel, double> newChannelValues = {};
@@ -36,16 +39,21 @@ class PidPageState with ChangeNotifier {
         newChannelValues[channel] ??= _pidPageData.channels[channel];
       }
       _pidPageData.channels = newChannelValues;
-      // _pidPageData.sendChannelValues(newChannelValues).whenComplete(
-      //   () {
-      //     print('===============SEND => RECEIVE ==================');
-      //     _pidPageData.receiveChannelValues().whenComplete(
-      //           () => notifyListeners(),
-      //         );
-      //   },
-      // );
-
+      await _pidPageData.sendChannelValues(newChannelValues).whenComplete(
+        () {
+          print('==========SENT===========');
+          /*  print('===============SEND => RECEIVE ==================');
+          _pidPageData.receiveChannelValues().whenComplete(
+                () => notifyListeners(),
+              );
+        */
+        },
+      );
     }
+  }
+
+  void _testFunction() {
+    _pidPageData.receiveChannelValues();
   }
 
   void _checkInputsAreValid() {
@@ -56,4 +64,11 @@ class PidPageState with ChangeNotifier {
     allInputsAreValid = errorMessagesAfterValidate.every((errMsg) => (errMsg == null));
     notifyListeners();
   }
+}
+
+class _TestCommandState {
+  MqttApi api = MqttApi();
+  bool commandIsReceived = false;
+  String receivedCommand;
+  void receiveCommand() {}
 }

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
 import 'package:my_mqtt/domain/state/sensors_page_state.dart';
 
-import 'model/my_page.dart';
+import 'model/page_template.dart';
 
 import 'package:provider/provider.dart';
 
 class SensorsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MyPage(
+    return PageTemplate(
       title: 'Датчики',
       body: SingleChildScrollView(
         child: Center(

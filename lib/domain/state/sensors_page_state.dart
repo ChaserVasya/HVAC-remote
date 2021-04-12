@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' show ChangeNotifier;
-import 'package:my_mqtt/data/model/sensors_page_data.dart';
+import 'package:my_mqtt/data/sensors_page_data.dart';
 
 class SensorsPageState extends ChangeNotifier {
   SensorsPageData _sensorsPageData = SensorsPageData();

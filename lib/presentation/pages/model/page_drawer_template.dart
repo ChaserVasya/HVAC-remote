@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_mqtt/internal/application.dart';
 
-class MyPageDrawer extends StatelessWidget {
+class PageDrawerTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -18,16 +18,16 @@ class MyPageDrawer extends StatelessWidget {
             children: [
               _DrawerList(
                   text: 'ПИД-регулятор',
-                  pageNames: pageNames[Pages.PidPage],
+                  pagesNames: pagesNames[Pages.PidPage],
                   icon: Icon(Icons.settings_input_composite)),
               _DrawerList(
                 text: 'Датчики',
-                pageNames: pageNames[Pages.SensorsPage],
+                pagesNames: pagesNames[Pages.SensorsPage],
                 icon: Icon(Icons.track_changes),
               ),
               _DrawerList(
                 text: 'Об авторе',
-                pageNames: pageNames[Pages.AuthorPage],
+                pagesNames: pagesNames[Pages.AuthorPage],
                 icon: Icon(Icons.info),
               ),
             ],
@@ -41,18 +41,18 @@ class MyPageDrawer extends StatelessWidget {
 class _DrawerList extends StatelessWidget {
   const _DrawerList({
     @required this.text,
-    @required this.pageNames,
+    @required this.pagesNames,
     @required this.icon,
   });
 
   final String text;
-  final String pageNames;
+  final String pagesNames;
   final Icon icon;
 
   Widget build(BuildContext context) {
     return ListTile(
       leading: icon,
-      onTap: () => Navigator.pushNamed(context, pageNames),
+      onTap: () => Navigator.pushNamed(context, pagesNames),
       title: Text(
         text,
         textAlign: TextAlign.left,
