@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 
-import 'page_drawer_template.dart';
+import 'drawer_template.dart';
 
 class PageTemplate extends StatelessWidget {
-  PageTemplate({
-    @required this.title,
-    @required this.body,
-    this.drawerIsNeed = true,
+  const PageTemplate({
+    required this.title,
+    required this.body,
     this.padding,
+    this.drawerIsNeeded = true,
   });
 
   final String title;
   final Widget body;
-  final bool drawerIsNeed;
-  final EdgeInsetsGeometry padding;
-
-  final EdgeInsetsGeometry _defaultPadding = EdgeInsets.all(8);
+  final bool drawerIsNeeded;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: (drawerIsNeed) ? PageDrawerTemplate() : null,
+      drawer: drawerIsNeeded ? DrawerTemplate() : null,
       appBar: AppBar(
         title: Text(title),
       ),
       body: Padding(
-        padding: padding ?? _defaultPadding,
+        padding: padding ?? EdgeInsets.all(16),
         child: body,
       ),
     );

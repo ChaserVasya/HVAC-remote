@@ -4,18 +4,17 @@ import 'dart:io';
 import 'package:jose/jose.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:my_mqtt/data/api/api.dart';
 import 'package:my_mqtt/data/api/mqtt/mqtt_callbacks_decorator.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class GoogleMqttConfiguration {
-  Future<void> initState;
+  late Future<void> initState;
 
-  MqttServerClient client;
-  JsonWebKey key;
+  late final MqttServerClient client;
+  late final JsonWebKey key;
 
-  final SecurityContext securityContext;
-  final MqttCallBacksDecorator mqttCallbacks;
+  late final SecurityContext securityContext;
+  late final MqttCallBacksDecorator mqttCallbacks;
 
   final String rootsFileAddress;
   final String keyFileAddress;
@@ -47,21 +46,17 @@ class GoogleMqttConfiguration {
     this.logsAreNeeded = false,
     this.rootsFileAddress = 'assets/roots/roots.pem',
     this.keyFileAddress = 'assets/keys/PrivateKey.pem',
-    MqttServerClient mqttServerClient,
-    MqttCallBacksDecorator mqttCallbacks,
-    SecurityContext securityContext,
+    this.mqttCallbacks = const MqttCallBacksDecorator(),
   })  : clientID = 'projects/$projectID/locations/$location/registries/$registryID/devices/$deviceID',
         upperPathForSend = '/devices/$deviceID/events/',
         upperPathForReceive = '/devices/$deviceID/',
-        mqttCallbacks = mqttCallbacks ?? MqttCallBacksDecorator(),
-        securityContext = securityContext ?? SecurityContext.defaultContext {
-    client = mqttServerClient ?? MqttServerClient(url, clientID);
-    client
+        securityContext = SecurityContext.defaultContext {
+    MqttServerClient untunedClient = MqttServerClient(url, clientID)
       ..port = port
       ..secure = true
       ..setProtocolV311()
       ..logging(on: logsAreNeeded);
-    client = mqttCallbacks.addCallbacks(client);
+    client = mqttCallbacks.addCallbacks(untunedClient);
 
     Future<void> _init() async {
       key = JsonWebKey.fromPem(await rootBundle.loadString(keyFileAddress));

@@ -1,14 +1,22 @@
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:my_mqtt/internal/exceptions.dart';
 
 class MqttCallBacksDecorator {
+  const MqttCallBacksDecorator();
   MqttServerClient addCallbacks(MqttServerClient client) {
-    bool _onBadCertificate(_) {
+    bool Function(dynamic)? _onBadCertificate = (_) {
+      _printWithFrame('BAD CERTIFICATE');
+      _printWithFrame(' need to check command: securityContext = SecurityContext.defaultContext. if anything instead (like SecyrityContext())- correct');
       _printWithFrame('BAD CERTIFICATE');
       return true;
+    };
+
+    void _onUnsubscribed(String? text) => _printWithFrame('UNSUBSCRIBED:  $text');
+    void _onSubscribeFail(String text) {
+      _printWithFrame('SUBSCRIBING FAILED:  $text');
+      throw SubscribeFailException;
     }
 
-    void _onUnsubscribed(String text) => _printWithFrame('UNSUBSCRIBED:  $text');
-    void _onSubscribeFail(String text) => _printWithFrame('SUBSCRIBING FAILED:  $text');
     void _onConnected() => _printWithFrame('CONNECTED');
     void _onDisconnected() => _printWithFrame('DISCONNECTED');
     void _onAutoReconnect() => _printWithFrame('AUTORECONNECT');
