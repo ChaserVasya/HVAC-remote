@@ -1,0 +1,163 @@
+package example;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.cloudiot.v1.CloudIot;
+import com.google.api.services.cloudiot.v1.CloudIotScopes;
+import com.google.api.services.cloudiot.v1.model.DeviceConfig;
+import com.google.api.services.cloudiot.v1.model.ModifyCloudToDeviceConfigRequest;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.functions.BackgroundFunction;
+import com.google.cloud.functions.Context;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import example.Example.PubSubMessage;
+
+public class Example implements BackgroundFunction<PubSubMessage> {
+
+    private static final Logger logger = Logger.getLogger(Example.class.getName());
+    private static final String appName = "my-app";
+    private static final String devicePath = "projects/snappy-provider-295713/locations/asia-east1/registries/mqtt-registry/devices/app";
+    private static final long version = 0;
+
+    public static void main(String[] args) throws GeneralSecurityException, IOException {
+    }
+
+    @Override
+    public void accept(PubSubMessage message, Context context) throws GeneralSecurityException, IOException {
+        String msgData = Base64ToUTF8(message.data);
+        Boolean isConnected = checkConnectStatus(msgData);
+
+        logger.info(msgData);
+
+        String configData = Base64ToUTF8(getCurrentConfig().getBinaryData());
+        String newConfig = putConnectStatusInConfig(isConnected, configData);
+        setDeviceConfiguration(newConfig);
+
+        logger.info(newConfig);
+    }
+
+    public static class PubSubMessage {
+        String data;
+        Map<String, String> attributes;
+        String messageId;
+        String publishTime;
+    }
+
+    protected static Boolean checkConnectStatus(String data) {
+        if (data.contains("\"CONNECT\"")) {
+            return true;
+        } else if (data.contains("\"DISCONNECT\"")) {
+            return false;
+        } else {
+            return null;
+        }
+    }
+
+    protected static String putConnectStatusInConfig(Boolean connectStatus, String configData) {
+        String key = "isOnline";
+        Type mapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+        Map<String, String> map = new Gson().fromJson(configData, mapType);
+        map.put(key, connectStatus.toString());
+        String json = new Gson().toJson(map);
+        return json;
+    }
+
+    Map<String, String> parseDataLikeJson(String data) {
+        Type mapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+        return new Gson().fromJson(data, mapType);
+    }
+
+    protected static String Base64ToUTF8(String data) {
+        return new String(Base64.getDecoder().decode(data));
+    }
+
+    protected static DeviceConfig getCurrentConfig() throws GeneralSecurityException, IOException {
+        CloudIot service = getService();
+        DeviceConfig config = service.projects().locations().registries().devices().configVersions().list(devicePath)
+                .execute().getDeviceConfigs().get(0);
+        return config;
+    }
+
+    protected static void setDeviceConfiguration(String data) throws GeneralSecurityException, IOException {
+        CloudIot service = getService();
+        ModifyCloudToDeviceConfigRequest req = new ModifyCloudToDeviceConfigRequest();
+        req.setVersionToUpdate(version);
+        // Data sent through the wire has to be base64 encoded.
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encPayload = encoder.encodeToString(data.getBytes(StandardCharsets.UTF_8.name()));
+        req.setBinaryData(encPayload);
+        DeviceConfig config = service.projects().locations().registries().devices()
+                .modifyCloudToDeviceConfig(devicePath, req).execute();
+        System.out.println("Updated: " + config.getVersion());
+    }
+
+    protected static CloudIot getService() throws GeneralSecurityException, IOException {
+        GoogleCredentials credential = GoogleCredentials.getApplicationDefault().createScoped(CloudIotScopes.all());
+        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+        HttpRequestInitializer init = new HttpCredentialsAdapter(credential);
+        final CloudIot service = new CloudIot.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, init)
+                .setApplicationName(appName).build();
+        return service;
+    }
+
+}
+
+
+class BlobGetter {
+    public static Blob getBlob(String projectId, String bucketName, String objectName) {
+        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+        Blob blob = storage.get(BlobId.of(bucketName, objectName));
+        return blob;
+    }
+}
+
+
+    protected static void sendCommand(String data) throws GeneralSecurityException, IOException {
+        final CloudIot service = getService();
+        SendCommandToDeviceRequest req = new SendCommandToDeviceRequest();
+        req.setBinaryData(UTF8ToBase64(data));
+        System.out.printf("Sending command to %s%n", devicePath);
+        service.projects().locations().registries().devices().sendCommandToDevice(devicePath, req).execute();
+    }
+
+
+        public static Blob getTruePassword() {
+        Storage storage = StorageOptions.newBuilder().setProjectId(projectID).build().getService();
+        Blob blob = storage.get(BlobId.of(bucketName, passwordFileName));
+        return blob;
+    }
+
+    public static String UTF8ToBase64(String UTF8string) throws GeneralSecurityException, IOException {
+        // Data sent through the wire has to be base64 encoded.
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(UTF8string.getBytes(StandardCharsets.UTF_8.name()));
+    }
+
+        protected static String Base64ToUTF8(String data) {
+        return new String(Base64.getDecoder().decode(data));
+    }
+
+
+    protected static String putPasswordStatusInConfig(Boolean passwordIsTrue, String configData) {
+        String key = "passwordIsTrue";
+        Type mapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+        Map<String, String> map = new Gson().fromJson(configData, mapType);
+        map.put(key, passwordIsTrue.toString());
+        String json = new Gson().toJson(map);
+        return json;
+    }
