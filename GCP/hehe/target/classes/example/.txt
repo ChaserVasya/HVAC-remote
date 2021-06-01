@@ -1,0 +1,99 @@
+package example;
+
+import example.Example.PubSubMessage;
+import com.google.cloud.functions.BackgroundFunction;
+import com.google.cloud.functions.Context;
+import java.util.Base64;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.io.*;
+import java.security.GeneralSecurityException;
+import java.nio.charset.StandardCharsets;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.services.cloudiot.v1.CloudIot;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.api.services.cloudiot.v1.model.SendCommandToDeviceRequest;
+import com.google.api.services.cloudiot.v1.CloudIotScopes;
+import com.google.api.client.http.HttpTransport;
+
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
+public class Example implements BackgroundFunction<PubSubMessage> {
+
+    private static final Logger logger = Logger.getLogger(Example.class.getName());
+
+    private static final String projectID = "snappy-provider-295713";
+    private static final String deviceID = "MyExampleDevice";
+    private static final String location = "asia-east1";
+    private static final String registryID = "MyStorage";
+    private static final String appName = "My app";
+
+    private static final String bucketName = "test-bucket-snappy-provider-295713";
+    private static final String objectName = "test_text.TXT";
+    private static final String destFilePath = "C:/Dev/Projects/my_mqtt_project/GCP/test_text.txt";
+
+    private static final String command = "Stepa pidor";
+
+    public static void main(String[] args) throws GeneralSecurityException, IOException {
+        logger.info("main");
+        Blob blob = BlobGetter.getBlob(projectID, bucketName, objectName);
+        sendCommand(deviceID, projectID, location, registryID, new String(blob.getContent()));
+    }
+
+    @Override
+    public void accept(PubSubMessage message, Context context) throws GeneralSecurityException, IOException {
+        logger.info(message.data != null ? new String(Base64.getDecoder().decode(message.data)) : "Zero message");
+        Blob blob = BlobGetter.getBlob(projectID, bucketName, objectName);
+        sendCommand(deviceID, projectID, location, registryID, new String(blob.getContent()));
+        // sendCommand(deviceID, projectID, location, registryID, command);
+        // DownloadObject.downloadObject(projectID, bucketName, objectName,
+        // destFilePath);
+    }
+
+    public static class PubSubMessage {
+        String data;
+        Map<String, String> attributes;
+        String messageId;
+        String publishTime;
+    }
+
+    protected static void sendCommand(String deviceId, String projectId, String cloudRegion, String registryName,
+            String data) throws GeneralSecurityException, IOException {
+        GoogleCredentials credential = GoogleCredentials.getApplicationDefault().createScoped(CloudIotScopes.all());
+        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+        HttpRequestInitializer init = new HttpCredentialsAdapter(credential);
+        HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
+
+        final CloudIot service = new CloudIot.Builder(transport, jsonFactory, init).setApplicationName(appName).build();
+
+        final String devicePath = String.format("projects/%s/locations/%s/registries/%s/devices/%s", projectId,
+                cloudRegion, registryName, deviceId);
+
+        SendCommandToDeviceRequest req = new SendCommandToDeviceRequest();
+
+        // Data sent through the wire has to be base64 encoded.
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encPayload = encoder.encodeToString(data.getBytes(StandardCharsets.UTF_8.name()));
+        req.setBinaryData(encPayload);
+        System.out.printf("Sending command to %s%n", devicePath);
+
+        service.projects().locations().registries().devices().sendCommandToDevice(devicePath, req).execute();
+
+        System.out.println("Command response: sent");
+    }
+}
+
+class BlobGetter {
+    public static Blob getBlob(String projectId, String bucketName, String objectName) {
+        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+        Blob blob = storage.get(BlobId.of(bucketName, objectName));
+        System.out.println("Gotten blob: " + blob.getName());
+        return blob;
+    }
+}
