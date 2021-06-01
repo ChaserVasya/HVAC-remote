@@ -25,12 +25,18 @@ dependencies:
   flutter:
     sdk: flutter
 
-
-
+  shared_preferences: ^2.0.5
+  stacked: ^2.1.6
+  get_it: ^6.0.0
+  provider: ^5.0.0
 
   mqtt_client: ^9.0.0
   jose: ^0.3.0
-  provider: ^5.0.0
+
+  firebase_core: ^1.2.0
+  firebase_auth: ^1.1.0
+  cloud_functions: ^1.1.0
+  cloud_firestore: ^2.2.0
 
 
 
@@ -39,6 +45,7 @@ dev_dependencies:
   test:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^1.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

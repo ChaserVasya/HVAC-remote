@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:my_mqtt/internal/application.dart';
+import 'package:my_mqtt/run_zoned_guarded_app.dart';
 
-void main() => runApp(Application());
+void main() {
+  runZonedGuardedApp();
+}

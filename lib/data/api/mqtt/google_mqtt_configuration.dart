@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:jose/jose.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:my_mqtt/data/api/mqtt/mqtt_callbacks_decorator.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:my_mqtt/data/api/mqtt/mqtt_callbacks_decorator.dart';
 
 class GoogleMqttConfiguration {
-  late Future<void> initState;
+  late Future<void> init;
 
   late final MqttServerClient client;
   late final JsonWebKey key;
@@ -36,18 +36,18 @@ class GoogleMqttConfiguration {
 
   GoogleMqttConfiguration({
     this.projectID = 'snappy-provider-295713',
-    this.deviceID = 'MyExampleDevice',
+    this.deviceID = 'app',
     this.location = 'asia-east1',
-    this.registryID = 'MyStorage',
+    this.registryID = 'mqtt-registry',
     this.username = 'unused',
     this.url = 'mqtt.googleapis.com',
     this.port = 8883,
     this.qosLevel = MqttQos.atMostOnce,
     this.logsAreNeeded = false,
     this.rootsFileAddress = 'assets/roots/roots.pem',
-    this.keyFileAddress = 'assets/keys/PrivateKey.pem',
-    this.mqttCallbacks = const MqttCallBacksDecorator(),
-  })  : clientID = 'projects/$projectID/locations/$location/registries/$registryID/devices/$deviceID',
+    this.keyFileAddress = 'assets/keys/app_private.pem',
+  })  : mqttCallbacks = MqttCallBacksDecorator(),
+        clientID = 'projects/$projectID/locations/$location/registries/$registryID/devices/$deviceID',
         upperPathForSend = '/devices/$deviceID/events/',
         upperPathForReceive = '/devices/$deviceID/',
         securityContext = SecurityContext.defaultContext {
@@ -64,6 +64,6 @@ class GoogleMqttConfiguration {
       client.securityContext = securityContext;
     }
 
-    initState = _init();
+    init = _init();
   }
 }

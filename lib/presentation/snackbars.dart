@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 
-class AuthResultNotReceivedExceptionSnackbar extends SnackBar {
-  const AuthResultNotReceivedExceptionSnackbar()
+abstract class ExceptionSnackBar extends SnackBar {
+  ExceptionSnackBar({required text})
       : super(
-          content: const Text('Ответ сервера не содержит результата аутентификации'),
+          content: Text(text, style: TextStyle(color: Colors.white)),
+          duration: Duration(seconds: 10),
+          backgroundColor: Colors.red,
         );
 }
 
-class ExceptionSnackbar extends SnackBar {
-  const ExceptionSnackbar() : super(content: const Text('Неизвестная ошибка'));
-}
-
-class NullExceptionSnackbar extends SnackBar {
-  const NullExceptionSnackbar()
+class SocketExceptionSnackbar extends ExceptionSnackBar {
+  SocketExceptionSnackbar()
       : super(
-          content: const Text('Получено недопустимое значение (Null). Причина: некорректная работа приложения или сервера'),
+          text: 'Проверьте интернет соединение',
         );
-}
-
-class SocketExceptionSnackbar extends SnackBar {
-  const SocketExceptionSnackbar() : super(content: const Text('Проверьте интернет соединение'));
 }

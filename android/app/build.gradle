@@ -26,6 +26,9 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+
+//added manually
+apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 // entered manually
@@ -36,7 +39,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 29 //added manually
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -48,27 +51,26 @@ android {
 
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        //TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.my_mqtt"
-        minSdkVersion 16
-        targetSdkVersion 29
+        minSdkVersion 23 //added manually
+        targetSdkVersion 30 //added manually
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
-// entered manually
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
-        }
-    }
+// //entered manually
+//    signingConfigs {
+//        release {
+//            keyAlias keystoreProperties['keyAlias']
+//            keyAuth keystoreProperties['keyAuth']
+//            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+//            storeAuth keystoreProperties['storeAuth']
+//        }
+//    }
     buildTypes {
         release {
-            signingConfig signingConfigs.release  // entered manually
-
+            //signingConfig signingConfigs.release  // entered manually
         }
     }
 }
@@ -79,4 +81,7 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation platform('com.google.firebase:firebase-bom:28.0.1') //added manually
+    implementation 'com.google.firebase:firebase-analytics' //added manually
 }
