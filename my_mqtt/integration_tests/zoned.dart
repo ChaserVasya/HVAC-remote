@@ -93,7 +93,7 @@ class _PageTemplateState extends State<PageTemplate> {
   @override
   void initState() async {
     //Future.delayed(Duration(seconds: 1), () => throw Exception);
-    await initServices();
+    initPlugins();
     super.initState();
     //throw Exception;
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_mqtt/application/service_locator.dart';
-import 'package:my_mqtt/presentation/routes_names.dart';
+import 'package:my_mqtt/application/routes_names.dart';
 
 class InitPage extends StatefulWidget {
   const InitPage({Key? key}) : super(key: key);

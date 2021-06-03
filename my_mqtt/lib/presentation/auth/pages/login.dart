@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:my_mqtt/presentation/auth/view_model.dart';
-import 'package:my_mqtt/presentation/routes_names.dart';
+import 'package:my_mqtt/application/routes_names.dart';
 import 'package:my_mqtt/presentation/templates/change_page_button_templates.dart';
 import 'package:my_mqtt/presentation/templates/text_form_form_template.dart';
 import 'package:my_mqtt/presentation/templates/page_template.dart';
 import 'package:provider/provider.dart';
 
 class LogingPage extends StatelessWidget {
+  const LogingPage({Key? key}) : super(key: key);
+
   final String buttonText = 'Нет аккаунта? Зарегистрироваться';
   final String routeName = RoutesNames.accountCreate;
 
@@ -17,8 +19,8 @@ class LogingPage extends StatelessWidget {
     return PageTemplate(
       body: Column(
         children: [
-          _LoginForm(),
-          ChangePageTextButton(buttonText, routeName),
+          const _LoginForm(),
+          ChangePageTextButton(buttonText, routeName, context),
         ],
       ),
     );
@@ -26,6 +28,8 @@ class LogingPage extends StatelessWidget {
 }
 
 class _LoginForm extends StatelessWidget {
+  const _LoginForm({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -35,14 +39,12 @@ class _LoginForm extends StatelessWidget {
           case ConnectionState.none:
             return _NoneLogining();
           case ConnectionState.waiting:
-            return CircularProgressIndicator();
-
+            return const CircularProgressIndicator();
           case ConnectionState.active:
-            return CircularProgressIndicator();
-
+            return const CircularProgressIndicator();
           case ConnectionState.done:
-            Navigator.pushNamed(context, RoutesNames.homePage);
-            return _SuccessLogIn();
+            Navigator.pushNamed(context, RoutesNames.home);
+            return const _SuccessLogIn();
         }
       },
     );
@@ -66,14 +68,17 @@ class _NoneLogining extends StatelessWidget {
 }
 
 class _SuccessLogIn extends StatelessWidget {
+  const _SuccessLogIn({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Icon(Icons.check_circle, color: Colors.green);
+    return const Icon(Icons.check_circle, color: Colors.green);
   }
 }
 
 class _LogInButton extends StatelessWidget {
   const _LogInButton(this.emailController, this.passwordController);
+
   final TextEditingController emailController;
   final TextEditingController passwordController;
 
@@ -83,7 +88,7 @@ class _LogInButton extends StatelessWidget {
       onPressed: () {
         context.read<AuthViewModel>().logIn(emailController.text, passwordController.text);
       },
-      child: Text('Войти'),
+      child: const Text('Войти'),
     );
   }
 }

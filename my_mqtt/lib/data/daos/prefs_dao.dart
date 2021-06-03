@@ -7,7 +7,7 @@ enum PrefsKeys {
 }
 
 class PrefsDao {
-  SharedPreferences _prefs = sl<SharedPreferences>();
+  final SharedPreferences _prefs = sl<SharedPreferences>();
 
   bool contains(PrefsKeys key) => _prefs.containsKey(_keys[key]!);
 
@@ -25,10 +25,6 @@ class PrefsDao {
 
   Future<bool> remove(PrefsKeys key) => _prefs.remove(_keys[key]!);
 }
+//for avoiding small typos and dyplicates
 
-Map<PrefsKeys, String> _keys = Map.fromIterable(
-  //for avoiding small typos and dyplicates
-  PrefsKeys.values,
-  key: (key) => key,
-  value: (key) => key.toString().split(".").last,
-);
+Map<PrefsKeys, String> _keys = {for (var key in PrefsKeys.values) key: key.toString().split(".").last};

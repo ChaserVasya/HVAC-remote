@@ -6,12 +6,6 @@ enum PageModes {
 }
 
 class PageTemplate extends StatelessWidget {
-  final PageModes mode;
-
-  final String? appBarTitle;
-  final Widget body;
-  final EdgeInsetsGeometry padding;
-
   const PageTemplate({
     Key? key,
     required this.body,
@@ -20,6 +14,11 @@ class PageTemplate extends StatelessWidget {
     this.padding = const EdgeInsets.all(16),
   })  : assert((mode == PageModes.afterAuth) && (appBarTitle != null)),
         super(key: key);
+
+  final PageModes mode;
+  final String? appBarTitle;
+  final Widget body;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +45,15 @@ class PageTemplate extends StatelessWidget {
 }
 
 class _DrawerList extends StatelessWidget {
-  final String text;
-
-  final String routeName;
-  final Icon icon;
   const _DrawerList({
     required this.text,
     required this.routeName,
     required this.icon,
   });
+
+  final String text;
+  final String routeName;
+  final Icon icon;
 
   @override
   Widget build(BuildContext context) {

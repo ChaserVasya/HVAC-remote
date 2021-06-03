@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:my_mqtt/presentation/auth/view_model.dart';
-import 'package:my_mqtt/presentation/routes_names.dart';
+import 'package:my_mqtt/application/routes_names.dart';
 import 'package:my_mqtt/presentation/templates/change_page_button_templates.dart';
 import 'package:my_mqtt/presentation/templates/text_form_form_template.dart';
 import 'package:my_mqtt/presentation/templates/page_template.dart';
 import 'package:provider/provider.dart';
 
 class AccountCreatePage extends StatelessWidget {
+  const AccountCreatePage({Key? key}) : super(key: key);
+
   final String buttonText = 'Уже зарегистрированы? Войти';
 
   @override
@@ -15,8 +17,8 @@ class AccountCreatePage extends StatelessWidget {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _AccountCreateForm(),
-          ChangePageTextButton(buttonText, RoutesNames.login),
+          const _AccountCreateForm(),
+          ChangePageTextButton(buttonText, RoutesNames.login, context),
         ],
       ),
     );
@@ -24,6 +26,8 @@ class AccountCreatePage extends StatelessWidget {
 }
 
 class _AccountCreateForm extends StatelessWidget {
+  const _AccountCreateForm({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
@@ -33,11 +37,11 @@ class _AccountCreateForm extends StatelessWidget {
           case ConnectionState.none:
             return _NoneAccountCreating();
           case ConnectionState.waiting:
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           case ConnectionState.active:
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           case ConnectionState.done:
-            return _AccountCreated();
+            return const _AccountCreated();
         }
       },
     );
@@ -45,6 +49,8 @@ class _AccountCreateForm extends StatelessWidget {
 }
 
 class _NoneAccountCreating extends StatelessWidget {
+  _NoneAccountCreating({Key? key}) : super(key: key);
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -61,10 +67,12 @@ class _NoneAccountCreating extends StatelessWidget {
 }
 
 class _AccountCreated extends StatelessWidget {
+  const _AccountCreated({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: const [
         _SuccessAccountCreateText(),
         _SendVerifyingEmailButton(),
       ],
@@ -73,6 +81,8 @@ class _AccountCreated extends StatelessWidget {
 }
 
 class _SuccessAccountCreateText extends StatelessWidget {
+  const _SuccessAccountCreateText({Key? key}) : super(key: key);
+
   final String text = 'Аккаунт создан. Для завершения регистрации пройдите по ссылке в письме, отправленном на почту';
 
   @override
@@ -97,12 +107,14 @@ class _AccountCreateButton extends StatelessWidget {
             emailController.text,
             passwordController.text,
           ),
-      child: Text('Создать'),
+      child: const Text('Создать'),
     );
   }
 }
 
 class _SendVerifyingEmailButton extends StatelessWidget {
+  const _SendVerifyingEmailButton({Key? key}) : super(key: key);
+
   final String text = 'Отправить подтверждающее письмо ещё раз';
   @override
   Widget build(BuildContext context) {

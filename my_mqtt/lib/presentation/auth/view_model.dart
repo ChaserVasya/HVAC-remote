@@ -1,19 +1,15 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:my_mqtt/presentation/auth/use_case.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  late final AuthUseCases _useCases;
+  final AuthUseCases _useCases = AuthUseCases();
 
-  Future<HttpsCallableResult>? _roleChanging;
+  Future<void>? _roleChanging;
   Future<void>? _sendingVerifyingEmail;
   Future<void>? _logouting;
   Future<void>? _logining;
-
   Future<void>? _accountCreating;
-  AuthViewModel() {
-    _useCases = AuthUseCases();
-  }
+
   Future<void>? get accountCreating => _accountCreating;
   set accountCreating(Future<void>? accountCreating) {
     _accountCreating = accountCreating;
@@ -32,8 +28,8 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<HttpsCallableResult>? get roleChanging => _roleChanging;
-  set roleChanging(Future<HttpsCallableResult>? roleChanging) {
+  Future<void>? get roleChanging => _roleChanging;
+  set roleChanging(Future<void>? roleChanging) {
     _roleChanging = roleChanging;
     notifyListeners();
   }

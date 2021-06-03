@@ -28,7 +28,6 @@ Future<void> init() async {
   print('init');
 
   WidgetsFlutterBinding.ensureInitialized();
-  await setupLocator();
 
   print('/init');
 }

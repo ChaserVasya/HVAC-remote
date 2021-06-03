@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DrawerTemplate extends Drawer {
-  DrawerTemplate()
+  DrawerTemplate({Key? key})
       : super(
+          key: key,
           child: Column(
             children: [
               Container(
@@ -10,10 +11,10 @@ class DrawerTemplate extends Drawer {
                 color: Colors.blue,
                 height: 60,
                 width: double.infinity,
-                child: Text('Вкладки', style: TextStyle(color: Colors.white, fontSize: 20)),
+                child: const Text('Вкладки', style: TextStyle(color: Colors.white, fontSize: 20)),
               ),
               Column(
-                children: [
+                children: const [
                   _DrawerList(
                     text: 'Тестовая страница',
                     pagesNames: '/TestPage',
@@ -42,6 +43,7 @@ class _DrawerList extends StatelessWidget {
   final String pagesNames;
   final Icon icon;
 
+  @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: icon,
@@ -49,9 +51,7 @@ class _DrawerList extends StatelessWidget {
       title: Text(
         text,
         textAlign: TextAlign.left,
-        style: TextStyle(
-          fontSize: 18,
-        ),
+        style: const TextStyle(fontSize: 18),
       ),
     );
   }
