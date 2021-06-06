@@ -1,60 +1,7 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:my_mqtt/application/exception_domain/common_alerts.dart';
-import 'package:my_mqtt/application/exception_domain/exception_alert.dart';
+import 'package:my_mqtt/application/exception_domain/common/exception_alert.dart';
 
-/*
-exception-codes have been taken from firebase_auth.dart. Not of all are needed. _Unneeded exception-codes listed for the record. 
-!exception-codes can out of date.
-codes:
-  accountExistsWithDifferentCredential, //!unused
-  customTokenMismatch, //!unused
-  emailAlreadyInUse,
-  expiredActionCode,
-  invalidActionCode,
-  invalidEmail,
-  invalidCredential, //!unused
-  invalidCustomToken, //!unused
-  invalidVerificationCode, //!unused
-  invalidVerificationId, //!unused
-  operationNotAllowed,
-  userDisabled,
-  userNotFound,
-  weakPassword,
-  wrongPassword,
-*/
-
-ExceptionAlert switchFirebaseExceptionAlert(FirebaseException e) {
-  String? message = e.message;
-  final details = (message != null) ? (e.code + message) : e.code;
-
-  switch (e.code) {
-    case 'email-already-in-use':
-      return _EmailAlreadyInUseAlert(details);
-    case 'expired-action-code':
-      return _ExpiredActionCodeAlert(details);
-    case 'invalid-action-code':
-      return _InvalidActionCodeAlert(details);
-    case 'invalid-email':
-      return _InvalidEmailAlert(details);
-    case 'invalid-verification-code':
-      return _InvalidVerificationCodeAlert(details);
-    case 'operation-not-allowed':
-      return _OperationNotAllowedAlert(details);
-    case 'user-disabled':
-      return _UserDisabledAlert(details);
-    case 'user-not-found':
-      return _UserNotFoundAlert(details);
-    case 'weak-password':
-      return _WeakPasswordAlert(details);
-    case 'wrong-password':
-      return _WrongPasswordAlert(details);
-    default:
-      return UnhandledAlert(details);
-  }
-}
-
-class _EmailAlreadyInUseAlert extends ExceptionAlert {
-  const _EmailAlreadyInUseAlert(String details)
+class EmailAlreadyInUseAlert extends ExceptionAlert {
+  const EmailAlreadyInUseAlert(String details)
       : super(
           titleForUser: 'E-mail уже использован',
           textForUser: 'Восстановите доступ к аккаунту, привязанному к введённому E-mail, или введите другой E-mail.',
@@ -62,8 +9,8 @@ class _EmailAlreadyInUseAlert extends ExceptionAlert {
         );
 }
 
-class _ExpiredActionCodeAlert extends ExceptionAlert {
-  const _ExpiredActionCodeAlert(String details)
+class ExpiredActionCodeAlert extends ExceptionAlert {
+  const ExpiredActionCodeAlert(String details)
       : super(
           titleForUser: 'Код истёк',
           textForUser: 'Отправьте код повторно.',
@@ -71,8 +18,8 @@ class _ExpiredActionCodeAlert extends ExceptionAlert {
         );
 }
 
-class _InvalidActionCodeAlert extends ExceptionAlert {
-  const _InvalidActionCodeAlert(String details)
+class InvalidActionCodeAlert extends ExceptionAlert {
+  const InvalidActionCodeAlert(String details)
       : super(
           titleForUser: 'Недействительный код',
           textForUser: 'Код неверен или уже использован.',
@@ -80,8 +27,8 @@ class _InvalidActionCodeAlert extends ExceptionAlert {
         );
 }
 
-class _InvalidEmailAlert extends ExceptionAlert {
-  const _InvalidEmailAlert(String details)
+class InvalidEmailAlert extends ExceptionAlert {
+  const InvalidEmailAlert(String details)
       : super(
           titleForUser: 'Введённый E-mail невалиден',
           textForUser: 'Проверьте введённый E-mail на наличие некорректных символов',
@@ -89,8 +36,8 @@ class _InvalidEmailAlert extends ExceptionAlert {
         );
 }
 
-class _InvalidVerificationCodeAlert extends ExceptionAlert {
-  const _InvalidVerificationCodeAlert(String details)
+class InvalidVerificationCodeAlert extends ExceptionAlert {
+  const InvalidVerificationCodeAlert(String details)
       : super(
           titleForUser: 'Неправильный код подтверждения',
           textForUser: 'Пароль не предоставлен или не соответствует паролю, привязанному к аккаунту.',
@@ -98,8 +45,8 @@ class _InvalidVerificationCodeAlert extends ExceptionAlert {
         );
 }
 
-class _OperationNotAllowedAlert extends ExceptionAlert {
-  const _OperationNotAllowedAlert(String details)
+class OperationNotAllowedAlert extends ExceptionAlert {
+  const OperationNotAllowedAlert(String details)
       : super(
           titleForUser: 'Запрещённая операция',
           textForUser: 'Клиент-приложение не согласовано с сервером. Сообщите об ошибке и ожидайте обновления.',
@@ -107,8 +54,8 @@ class _OperationNotAllowedAlert extends ExceptionAlert {
         );
 }
 
-class _UserDisabledAlert extends ExceptionAlert {
-  const _UserDisabledAlert(String details)
+class UserDisabledAlert extends ExceptionAlert {
+  const UserDisabledAlert(String details)
       : super(
           titleForUser: 'Аккаунт заблокирован',
           textForUser: 'Обратитесь к администратору за комментариями.',
@@ -116,8 +63,8 @@ class _UserDisabledAlert extends ExceptionAlert {
         );
 }
 
-class _UserNotFoundAlert extends ExceptionAlert {
-  const _UserNotFoundAlert(String details)
+class UserNotFoundAlert extends ExceptionAlert {
+  const UserNotFoundAlert(String details)
       : super(
           titleForUser: 'Аккаунт не найден',
           textForUser: ''' Не найден аккаунт, привязанный к данным реквизитам.Возможные причины:
@@ -128,8 +75,8 @@ class _UserNotFoundAlert extends ExceptionAlert {
         );
 }
 
-class _WeakPasswordAlert extends ExceptionAlert {
-  const _WeakPasswordAlert(String details)
+class WeakPasswordAlert extends ExceptionAlert {
+  const WeakPasswordAlert(String details)
       : super(
           titleForUser: 'Слабый пароль',
           textForUser: 'Добавьте цифр, букв разного регистра.',
@@ -137,11 +84,11 @@ class _WeakPasswordAlert extends ExceptionAlert {
         );
 }
 
-class _WrongPasswordAlert extends ExceptionAlert {
-  const _WrongPasswordAlert(String details)
+class WrongPasswordAlert extends ExceptionAlert {
+  const WrongPasswordAlert(String details)
       : super(
           titleForUser: 'Неправильный пароль',
-          textForUser: 'Пароль не предоставлен или не соответствует паролю, привязанному к аккаунту.',
+          textForUser: 'Пароль неправильный или не установлен для аккаунта.',
           details: details,
         );
 }

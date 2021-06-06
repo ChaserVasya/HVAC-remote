@@ -9,7 +9,7 @@ class ChangePageTextButton extends TextButton {
   }) : super(
           key: key,
           onPressed: () => Navigator.pushReplacementNamed(context, routeName),
-          child: Text(text),
+          child: Text(text, softWrap: false),
         );
 }
 
@@ -22,6 +22,19 @@ class ChangePageElevatedButton extends ElevatedButton {
   }) : super(
           key: key,
           onPressed: () => Navigator.pushReplacementNamed(context, routeName),
-          child: Text(text),
+          child: Text(text, softWrap: false),
+        );
+}
+
+class ChangePageOutlinedButton extends OutlinedButton {
+  ChangePageOutlinedButton(
+    String text,
+    String routeName,
+    BuildContext context, {
+    Key? key,
+  }) : super(
+          key: key,
+          onPressed: () => Navigator.pushReplacementNamed(context, routeName),
+          child: Text(text, softWrap: false),
         );
 }

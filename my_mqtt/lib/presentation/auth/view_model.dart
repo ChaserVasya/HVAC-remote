@@ -11,38 +11,33 @@ class AuthViewModel extends ChangeNotifier {
   Future<void>? _accountCreating;
 
   Future<void>? get accountCreating => _accountCreating;
-  set accountCreating(Future<void>? accountCreating) {
-    _accountCreating = accountCreating;
-    notifyListeners();
-  }
-
   Future<void>? get logining => _logining;
-  set logining(Future<void>? logining) {
-    _logining = logining;
-    notifyListeners();
-  }
-
   Future<void>? get logouting => _logouting;
-  set logouting(Future<void>? logouting) {
-    _logouting = logouting;
-    notifyListeners();
-  }
-
   Future<void>? get roleChanging => _roleChanging;
-  set roleChanging(Future<void>? roleChanging) {
-    _roleChanging = roleChanging;
-    notifyListeners();
-  }
-
   Future<void>? get sendingVerifyingEmail => _sendingVerifyingEmail;
-  set sendingVerifyingEmail(Future<void>? sendingVerifyingEmail) {
-    _sendingVerifyingEmail = sendingVerifyingEmail;
+
+  void changeRole(String password) {
+    _roleChanging = _useCases.changeRole(password);
     notifyListeners();
   }
 
-  void changeRole(String password) => _useCases.changeRole(password);
-  void createAccount(String email, String password) => _useCases.createAccount(email, password);
-  void logIn(String email, String password) => _useCases.logIn(email, password);
-  void logOut() => _useCases.logOut();
-  void sendVerifyingEmail() => _useCases.sendVerifyingEmail();
+  void createAccount(String email, String password, String repeatedPassword) {
+    _accountCreating = _useCases.createAccount(email, password, repeatedPassword);
+    notifyListeners();
+  }
+
+  void logIn(String email, String password) {
+    _logining = _useCases.logIn(email, password);
+    notifyListeners();
+  }
+
+  void logOut() {
+    _logouting = _useCases.logOut();
+    notifyListeners();
+  }
+
+  void sendVerifyingEmail() {
+    _sendingVerifyingEmail = _useCases.sendVerifyingEmail();
+    notifyListeners();
+  }
 }

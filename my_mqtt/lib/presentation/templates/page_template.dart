@@ -1,45 +1,40 @@
 import 'package:flutter/material.dart';
 
-enum PageModes {
-  beforeAuth,
-  afterAuth,
-}
-
 class PageTemplate extends StatelessWidget {
   const PageTemplate({
     Key? key,
     required this.body,
-    this.mode = PageModes.afterAuth,
+    this.afterAuth = true,
     this.appBarTitle,
     this.padding = const EdgeInsets.all(16),
-  })  : assert((mode == PageModes.afterAuth) && (appBarTitle != null)),
+  })  : assert(afterAuth == (appBarTitle != null)),
         super(key: key);
 
-  final PageModes mode;
+  final bool afterAuth;
   final String? appBarTitle;
   final Widget body;
   final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
-    switch (mode) {
-      case PageModes.beforeAuth:
-        return Scaffold(
-          body: Padding(
+    if (afterAuth) {
+      return Scaffold(
+        drawer: _DrawerTemplate(),
+        appBar: AppBar(title: Text(appBarTitle!)),
+        body: Padding(
+          padding: padding,
+          child: body,
+        ),
+      );
+    } else {
+      return Scaffold(
+        body: Center(
+          child: Padding(
             padding: padding,
             child: body,
           ),
-        );
-
-      case PageModes.afterAuth:
-        return Scaffold(
-          drawer: _DrawerTemplate(),
-          appBar: AppBar(title: Text(appBarTitle!)),
-          body: Padding(
-            padding: padding,
-            child: body,
-          ),
-        );
+        ),
+      );
     }
   }
 }

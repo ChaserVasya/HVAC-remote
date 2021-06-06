@@ -9,13 +9,32 @@ class EnterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageTemplate(
-      mode: PageModes.beforeAuth,
+      afterAuth: false,
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ChangePageElevatedButton('Войти', RoutesNames.login, context),
-          ChangePageElevatedButton('Зарегистрироваться', RoutesNames.accountCreate, context),
+          Image.asset('assets/images/logo.png', width: 150, height: 150),
+          const Padding(padding: EdgeInsets.only(top: 80)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ChangePageElevatedButton('Войти', RoutesNames.login, context),
+                ChangePageOutlinedButton('Зарегистрироваться', RoutesNames.accountCreate, context),
+              ],
+            ),
+          ),
+          _policiesText,
         ],
       ),
     );
   }
 }
+
+//TODO privacy police, terms of service, company name
+const _policiesText = Text(
+  'Авторизуясь вы соглашаетесь с условиями пользования и политикой конфиденциальности компании COMPANY_NAME',
+  textAlign: TextAlign.center,
+  style: TextStyle(color: Colors.black45),
+);

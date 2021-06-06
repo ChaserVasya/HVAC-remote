@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_mqtt/presentation/auth/view_model.dart';
 import 'package:my_mqtt/application/routes_names.dart';
@@ -14,12 +15,17 @@ class AccountCreatePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageTemplate(
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const _AccountCreateForm(),
-          ChangePageTextButton(buttonText, RoutesNames.login, context),
-        ],
+      afterAuth: false,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/logo.png', width: 150, height: 150),
+            const Padding(padding: EdgeInsets.only(top: 80)),
+            const _AccountCreateForm(),
+            ChangePageTextButton(buttonText, RoutesNames.login, context),
+          ],
+        ),
       ),
     );
   }
@@ -53,6 +59,7 @@ class _NoneAccountCreating extends StatelessWidget {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController repeateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +67,20 @@ class _NoneAccountCreating extends StatelessWidget {
       children: [
         TextFormFieldTemplate('E-mail', emailController),
         TextFormFieldTemplate('Пароль', passwordController),
-        _AccountCreateButton(emailController, passwordController),
+        TextFormFieldTemplate('Повторите пароль', repeateController),
+        _buildAccountCreateButton(context),
       ],
+    );
+  }
+
+  Widget _buildAccountCreateButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => context.watch<AuthViewModel>().createAccount(
+            emailController.text,
+            passwordController.text,
+            repeateController.text,
+          ),
+      child: const Text('Создать'),
     );
   }
 }
@@ -72,54 +91,25 @@ class _AccountCreated extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: const [
-        _SuccessAccountCreateText(),
-        _SendVerifyingEmailButton(),
+      children: [
+        _buildSuccessAccountCreateText(),
+        _buildVerifyingEmailSendButton(context),
       ],
     );
   }
-}
 
-class _SuccessAccountCreateText extends StatelessWidget {
-  const _SuccessAccountCreateText({Key? key}) : super(key: key);
-
-  final String text = 'Аккаунт создан. Для завершения регистрации пройдите по ссылке в письме, отправленном на почту';
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget _buildSuccessAccountCreateText() {
+    const String text = 'Аккаунт создан. Для завершения регистрации пройдите по ссылке в письме, отправленном на почту';
+    return const ColoredBox(
       color: Colors.green,
       child: Text(text),
     );
   }
-}
 
-class _AccountCreateButton extends StatelessWidget {
-  const _AccountCreateButton(this.emailController, this.passwordController);
-
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => context.watch<AuthViewModel>().createAccount(
-            emailController.text,
-            passwordController.text,
-          ),
-      child: const Text('Создать'),
-    );
-  }
-}
-
-class _SendVerifyingEmailButton extends StatelessWidget {
-  const _SendVerifyingEmailButton({Key? key}) : super(key: key);
-
-  final String text = 'Отправить подтверждающее письмо ещё раз';
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildVerifyingEmailSendButton(context) {
+    const String text = 'Отправить подтверждающее письмо ещё раз';
     return TextButton(
-      child: Text(text),
+      child: const Text(text),
       onPressed: context.watch<AuthViewModel>().sendVerifyingEmail,
     );
   }

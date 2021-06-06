@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:my_mqtt/application/application.dart';
-import 'package:my_mqtt/application/exception_domain/async_exception_handler.dart';
+import 'package:my_mqtt/application/exception_domain/zoned_exception_handler.dart';
 
 void main() {
   _runZonedGuardedApp();
@@ -10,7 +10,7 @@ void main() {
 
 void _runZonedGuardedApp() {
   final navigatorKey = GlobalKey<NavigatorState>();
-  final asyncExceptionHandler = AsyncExceptionHandler(navigatorKey);
+  final zonedExceptionHandler = ZonedExceptionHandler(navigatorKey);
 
   runZonedGuarded(
     () {
@@ -22,7 +22,7 @@ void _runZonedGuardedApp() {
       //! rest initialiations are in [InitPage]
       runApp(Application(navigatorKey));
     },
-    asyncExceptionHandler.handle,
+    zonedExceptionHandler.handle,
   );
 }
 

@@ -17,11 +17,17 @@ class LogingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageTemplate(
-      body: Column(
-        children: [
-          const _LoginForm(),
-          ChangePageTextButton(buttonText, routeName, context),
-        ],
+      afterAuth: false,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/logo.png', width: 150, height: 150),
+            const Padding(padding: EdgeInsets.only(top: 80)),
+            const _LoginForm(),
+            ChangePageTextButton(buttonText, routeName, context),
+          ],
+        ),
       ),
     );
   }
@@ -43,8 +49,14 @@ class _LoginForm extends StatelessWidget {
           case ConnectionState.active:
             return const CircularProgressIndicator();
           case ConnectionState.done:
-            Navigator.pushNamed(context, RoutesNames.home);
-            return const _SuccessLogIn();
+            if (snapshot.hasError) {
+              print('hasError');
+              return _NoneLogining();
+            } else {
+              print('has not Error');
+              Future.delayed(Duration.zero, () => Navigator.pushReplacementNamed(context, RoutesNames.home));
+              return const _SuccessLogIn();
+            }
         }
       },
     );
@@ -61,8 +73,17 @@ class _NoneLogining extends StatelessWidget {
       children: [
         TextFormFieldTemplate('E-mail', emailController),
         TextFormFieldTemplate('Пароль', passwordController),
-        _LogInButton(emailController, passwordController),
+        _buildLogInButton(context),
       ],
+    );
+  }
+
+  Widget _buildLogInButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        context.read<AuthViewModel>().logIn(emailController.text, passwordController.text);
+      },
+      child: const Text('Войти'),
     );
   }
 }
@@ -73,22 +94,5 @@ class _SuccessLogIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Icon(Icons.check_circle, color: Colors.green);
-  }
-}
-
-class _LogInButton extends StatelessWidget {
-  const _LogInButton(this.emailController, this.passwordController);
-
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        context.read<AuthViewModel>().logIn(emailController.text, passwordController.text);
-      },
-      child: const Text('Войти'),
-    );
   }
 }

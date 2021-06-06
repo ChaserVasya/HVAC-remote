@@ -1,21 +1,27 @@
-import 'package:my_mqtt/application/exception_domain/common_alerts.dart';
-import 'package:my_mqtt/application/exception_domain/custom/custom_exception.dart';
-import 'package:my_mqtt/application/exception_domain/custom/exceptions.dart';
-import 'package:my_mqtt/application/exception_domain/exception_alert.dart';
+import 'package:flutter/material.dart';
+import 'package:my_mqtt/application/exception_domain/common/exception_alert.dart';
+import 'package:my_mqtt/presentation/auth/view_model.dart';
+import 'package:provider/provider.dart';
 
-ExceptionAlert switchCustomExceptionAlert(CustomException e) {
-  if (e is EmailVerifyingException) {
-    return const _EmailVerifyingAlert();
-  } else {
-    return UnhandledAlert(e.message);
-  }
-}
-
-class _EmailVerifyingAlert extends ExceptionAlert {
-  const _EmailVerifyingAlert()
+class EmailNotVerifiedAlert extends ExceptionAlert {
+  EmailNotVerifiedAlert()
       : super(
           titleForUser: 'Почта не подтверждена',
           textForUser:
-              'Почта, привязанная к реквизитам, должна быть подтверждена. Перейдите по ссылке в письме, автоматически отправленном вам на почту. Отправить сообщение повторно?',
+              'Почта должна быть подтверждена. Перейдите по ссылке в письме, автоматически отправленном вам на почту. Отправить сообщение повторно?',
+          actionsBuilder: (context) => [
+            ElevatedButton(
+              child: const Text('Отправить'),
+              onPressed: () => context.read<AuthViewModel>().sendVerifyingEmail(),
+            )
+          ],
+        );
+}
+
+class IncorrectRepeatedPasswordAlert extends ExceptionAlert {
+  const IncorrectRepeatedPasswordAlert()
+      : super(
+          titleForUser: 'Пароли не совпадают',
+          textForUser: 'Пароль и повторный пароль не совпадают. Перепроверьте и повторите.',
         );
 }
