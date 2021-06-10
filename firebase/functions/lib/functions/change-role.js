@@ -6,6 +6,11 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const logger = functions.logger;
 
+
+const constants = require("../constants.js").constants;
+
+const UNSUCCESSFUL_ROLE_CHANGING_WARN = constants.UNSUCCESSFUL_ROLE_CHANGING_WARN;
+
 class UnauthenticatedError extends Error {
   constructor() {
     super();
@@ -14,37 +19,23 @@ class UnauthenticatedError extends Error {
   }
 }
 
-const USERS_COLLECTION = "users";
-const ROLES_COLLECTION = "roles";
-const ROLE_FIELD = "role";
-const CUSTOM_CLAIMS_FIELD = "custom_claims";
-const UID_FIELD = "uid";
-const MESSAGE_FIELD = "message";
-
-const UNSUCCESSFUL_ROLE_CHANGING_WARN = "unsuccessful attempt to change roles";
-
 exports.changeRole = functions.https.onCall(
     async (password, context) => {
       try {
-        const roleIsFinded = () => Boolean(role);
-
         checkForExceptions();
 
-        const role = await getRoleWithSameAuth(password);
+        const newRole = await getRoleWithSamePassword(password);
         const uid = context.auth.uid;
 
-        if (roleIsFinded()) {
-          await admin.firestore().collection(USERS_COLLECTION).doc(uid).update(ROLE_FIELD, role);
-          const customClaims = {[ROLE_FIELD]: role};
-          await admin.auth().setCustomUserClaims(uid, customClaims);
-          const logMessage = {[UID_FIELD]: uid, [CUSTOM_CLAIMS_FIELD]: customClaims};
-          logger.log(logMessage);
+        if (newRole) {
+          await updateUserDoc(uid, newRole);
+          await refreshClaimsWithNewRole(uid, newRole);
+          logSuccessResult(uid, newRole);
+          return true;
         } else {
-          const logMessage = {[UID_FIELD]: uid, [MESSAGE_FIELD]: UNSUCCESSFUL_ROLE_CHANGING_WARN};
-          logger.warn(logMessage);
+          warnAboutUnsuccess(uid);
+          return false;
         }
-
-        return role;
       } catch (error) {
         if (error instanceof UnauthenticatedError) {
           logger.error(error.name, error.message);
@@ -60,16 +51,17 @@ exports.changeRole = functions.https.onCall(
     },
 );
 
-async function getRoleWithSameAuth(password) {
+async function getRoleWithSamePassword(password) {
   const rolesDocList = await admin.firestore()
-      .collection(ROLES_COLLECTION)
+      .collection("roles")
       .listDocuments();
+
   const role = await findRole();
   return role;
 
   async function findRole() {
     for (const roleDocRef of rolesDocList) {
-      const getRoleDetails = async () =>{
+      const getRoleDetails = async () => {
         const roleDocSnapshot = await roleDocRef.get();
         return roleDocSnapshot.data();
       };
@@ -77,8 +69,36 @@ async function getRoleWithSameAuth(password) {
       const roleDetails = await getRoleDetails();
       if (roleDetails.password === password) return roleDocRef.id;
     }
-    return undefined;
+    return null;
   }
 }
 
 
+async function refreshClaimsWithNewRole(uid, newRole) {
+  const oldCustomClaims = (await admin.auth().getUser(uid)).customClaims;
+  oldCustomClaims["role"] = newRole;
+  const newCustomClaims = oldCustomClaims;
+
+  await admin.auth().setCustomUserClaims(uid, newCustomClaims);
+}
+
+async function updateUserDoc(uid, newRole) {
+  await admin.firestore()
+      .collection("users")
+      .doc(uid)
+      .update("role", newRole);
+}
+
+function warnAboutUnsuccess(uid) {
+  logger.warn({
+    "uid": uid,
+    "message": UNSUCCESSFUL_ROLE_CHANGING_WARN,
+  });
+}
+
+function logSuccessResult(uid, newRole) {
+  logger.log({
+    "uid": uid,
+    "role": newRole,
+  });
+}

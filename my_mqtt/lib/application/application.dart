@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:my_mqtt/presentation/auth/pages/account_create.dart';
-import 'package:my_mqtt/presentation/auth/pages/login.dart';
-import 'package:my_mqtt/presentation/auth/view_model.dart';
-import 'package:my_mqtt/presentation/auth/pages/enter.dart';
-import 'package:my_mqtt/presentation/home/home.dart';
-import 'package:my_mqtt/presentation/init_page.dart';
-import 'package:my_mqtt/application/routes_names.dart';
+import 'package:my_mqtt/presentation/app_view_model/role.dart';
+import 'package:my_mqtt/presentation/pages/before_auth/account_create/view_model.dart';
+import 'package:my_mqtt/presentation/pages/before_auth/init/view_model.dart';
+import 'package:my_mqtt/presentation/pages/before_auth/signing/view_model.dart';
+import 'package:my_mqtt/presentation/pages/settings/change_role/view_model.dart';
+
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+
+import 'routes.dart';
 
 class Application extends StatelessWidget {
-  const Application(this.navigatorKey, {Key? key}) : super(key: key);
-
-  final GlobalKey<NavigatorState> navigatorKey;
+  const Application({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthViewModel>(create: (_) => AuthViewModel()),
-      ],
+      providers: _providers,
       child: MaterialApp(
-        navigatorKey: navigatorKey,
         title: 'MQTT Testing',
         initialRoute: RoutesNames.init,
-        routes: {
-          RoutesNames.init: (_) => const InitPage(),
-          // before auth
-          RoutesNames.enter: (_) => const EnterPage(),
-          RoutesNames.login: (_) => const LogingPage(),
-          RoutesNames.accountCreate: (_) => const AccountCreatePage(),
-          // after auth
-          RoutesNames.home: (_) => const HomePage(),
-        },
+        routes: routes,
       ),
     );
   }
 }
+
+final List<SingleChildWidget> _providers = [
+  //app layer
+  ChangeNotifierProvider<RoleViewModel>(create: (_) => RoleViewModel()),
+  //before auth
+  ChangeNotifierProvider<InitViewModel>(create: (_) => InitViewModel()),
+  ChangeNotifierProvider<SigningViewModel>(create: (_) => SigningViewModel()),
+  ChangeNotifierProvider<AccountCreateViewModel>(create: (_) => AccountCreateViewModel()),
+  //common
+  ChangeNotifierProvider<AccountCreateViewModel>(create: (_) => AccountCreateViewModel()),
+  //settings
+  ChangeNotifierProvider<ChangeRoleViewModel>(create: (_) => ChangeRoleViewModel()),
+];
