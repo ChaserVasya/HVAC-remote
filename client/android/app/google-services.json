@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "728764341397",
+    "project_id": "snappy-provider-295713",
+    "storage_bucket": "snappy-provider-295713.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728764341397:android:6acc8ddae83925380d4f9c",
+        "android_client_info": {
+          "package_name": "com.example.hvac_remote_client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728764341397-cj9a4u7ieo837r8os688mvtkt08ct8h4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs4Kw4Ev1SQ1uOomKP77Tgi_SUZL7_U8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728764341397-cj9a4u7ieo837r8os688mvtkt08ct8h4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,104 +1,65 @@
 "use strict";
-
-/* eslint max-len: ["error", { "code": 120 }]*/
-
-const functions = require("firebase-functions");
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.changeRole = void 0;
+const firebase_functions_1 = require("firebase-functions");
 const admin = require("firebase-admin");
-const logger = functions.logger;
-
-
-const constants = require("../constants.js").constants;
-
-const UNSUCCESSFUL_ROLE_CHANGING_WARN = constants.UNSUCCESSFUL_ROLE_CHANGING_WARN;
-
-class UnauthenticatedError extends Error {
-  constructor() {
-    super();
-    this.name = "UnauthenticatedError";
-    this.message = "attempted unauthorized access";
-  }
-}
-
-exports.changeRole = functions.https.onCall(
-    async (password, context) => {
-      try {
-        checkForExceptions();
-
+const errors_1 = require("../throwed/errors");
+const exceptions_1 = require("../throwed/exceptions");
+exports.changeRole = firebase_functions_1.https.onCall(async (password, context) => {
+    try {
+        if (!context.auth)
+            throw new exceptions_1.UnauthorizedAccess();
         const newRole = await getRoleWithSamePassword(password);
         const uid = context.auth.uid;
-
         if (newRole) {
-          await updateUserDoc(uid, newRole);
-          await refreshClaimsWithNewRole(uid, newRole);
-          logSuccessResult(uid, newRole);
-          return true;
-        } else {
-          warnAboutUnsuccess(uid);
-          return false;
+            await updateUserDoc(uid, newRole);
+            await refreshClaimsWithNewRole(uid, newRole);
+            logSuccess(uid, newRole);
+            return true;
         }
-      } catch (error) {
-        if (error instanceof UnauthenticatedError) {
-          logger.error(error.name, error.message);
-          throw new functions.https.HttpsError(error.name, error.message);
-        } else {
-          throw error;
+        else {
+            warnAboutUnsuccess(uid);
+            return false;
         }
-      }
-
-      function checkForExceptions() {
-        if (!context.auth) throw new UnauthenticatedError;
-      }
-    },
-);
-
+    }
+    catch (e) {
+        if (!(e instanceof exceptions_1.Exception))
+            firebase_functions_1.logger.error(e.code, e.details);
+        throw e;
+    }
+});
 async function getRoleWithSamePassword(password) {
-  const rolesDocList = await admin.firestore()
-      .collection("roles")
-      .listDocuments();
-
-  const role = await findRole();
-  return role;
-
-  async function findRole() {
+    const rolesDocList = await admin
+        .firestore()
+        .collection("roles")
+        .listDocuments();
     for (const roleDocRef of rolesDocList) {
-      const getRoleDetails = async () => {
-        const roleDocSnapshot = await roleDocRef.get();
-        return roleDocSnapshot.data();
-      };
-
-      const roleDetails = await getRoleDetails();
-      if (roleDetails.password === password) return roleDocRef.id;
+        const roleDetails = (await roleDocRef.get()).data();
+        if (roleDetails.password === password)
+            return roleDocRef.id;
     }
     return null;
-  }
 }
-
-
 async function refreshClaimsWithNewRole(uid, newRole) {
-  const oldCustomClaims = (await admin.auth().getUser(uid)).customClaims;
-  oldCustomClaims["role"] = newRole;
-  const newCustomClaims = oldCustomClaims;
-
-  await admin.auth().setCustomUserClaims(uid, newCustomClaims);
+    const customClaims = (await admin.auth().getUser(uid)).customClaims;
+    if (!customClaims || !("role" in customClaims))
+        throw new errors_1.RoleClaimNotExist();
+    customClaims.role = newRole;
+    await admin.auth().setCustomUserClaims(uid, customClaims);
 }
-
 async function updateUserDoc(uid, newRole) {
-  await admin.firestore()
-      .collection("users")
-      .doc(uid)
-      .update("role", newRole);
+    await admin.firestore().collection("users").doc(uid).update("role", newRole);
 }
-
 function warnAboutUnsuccess(uid) {
-  logger.warn({
-    "uid": uid,
-    "message": UNSUCCESSFUL_ROLE_CHANGING_WARN,
-  });
+    firebase_functions_1.logger.warn({
+        "uid": uid,
+        "message": "unsuccessful attempt to change roles",
+    });
 }
-
-function logSuccessResult(uid, newRole) {
-  logger.log({
-    "uid": uid,
-    "role": newRole,
-  });
+function logSuccess(uid, newRole) {
+    firebase_functions_1.logger.log({
+        "uid": uid,
+        "role": newRole,
+    });
 }
+//# sourceMappingURL=change-role.js.map
