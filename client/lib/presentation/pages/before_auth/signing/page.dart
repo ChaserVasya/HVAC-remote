@@ -18,19 +18,24 @@ class SigningPage extends StatelessWidget {
     _pageContext = context;
     return PageTemplate(
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const Padding(padding: EdgeInsets.only(top: 49)),
-          Image.asset('assets/images/logo.png', width: 150, height: 150),
-          const Padding(padding: EdgeInsets.only(top: 80)),
-          const _LoginForm(),
-          TextButton(
-            child: const Text('Нет аккаунта? Зарегистрироваться'),
-            onPressed: () => Navigator.pushReplacementNamed(context, RoutesNames.accountCreate),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: Image.asset('assets/images/logo.png', height: 150, width: 150),
           ),
-          TextButton(
-            child: const Text('Сбросить пароль'),
-            onPressed: () => resetPassword(context),
+          const _LoginForm(),
+          Column(
+            children: [
+              TextButton(
+                child: const Text('Нет аккаунта? Зарегистрироваться'),
+                onPressed: () => Navigator.pushReplacementNamed(context, RoutesNames.accountCreate),
+              ),
+              TextButton(
+                child: const Text('Сбросить пароль'),
+                onPressed: () => resetPassword(context),
+              ),
+            ],
           ),
         ],
       ),

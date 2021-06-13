@@ -1,9 +1,4 @@
-import 'package:flutter/widgets.dart';
-
 abstract class Notice {
-  const Notice(this.message, [this.actionsBuilder]);
+  const Notice(this.message);
   final String message;
-  final ActionsBuilder? actionsBuilder;
 }
-
-typedef ActionsBuilder = List<Widget> Function(BuildContext context);

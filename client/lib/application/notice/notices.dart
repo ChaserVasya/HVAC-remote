@@ -15,8 +15,8 @@ class WrongRolePasswordNotice extends Notice {
   const WrongRolePasswordNotice() : super('Неправильный пароль. Роль не изменена.');
 }
 
-class PasswordResetEmailSendedNotice extends Notice {
-  const PasswordResetEmailSendedNotice()
+class ResetEmailSendedNotice extends Notice {
+  const ResetEmailSendedNotice()
       : super(
           'На почту отправлено письмо. Перейдите по ссылке в письме и введите новый пароль',
         );
@@ -26,5 +26,12 @@ class DeleteAccountNotice extends Notice {
   const DeleteAccountNotice()
       : super(
           'Вы действительно хотите удалить аккаунт?',
+        );
+}
+
+class SendEmailAgainNotice extends Notice {
+  const SendEmailAgainNotice()
+      : super(
+          'Указанная почта не подтверждена. Отправить письмо ещё раз?',
         );
 }

@@ -6,7 +6,7 @@ import 'custom/custom_exception.dart';
 import 'custom/switch_alert.dart';
 import 'firebase/switch_alert.dart';
 
-ExceptionAlert switchExceptionAlert(Object e) {
+ExceptionAlert switchExceptionAlert(Object e, StackTrace s) {
   // ignore: dead_code
   if (false) {
     // for align
@@ -16,5 +16,5 @@ ExceptionAlert switchExceptionAlert(Object e) {
     return switchCustomExceptionAlert(e);
   }
 
-  return const ProgrammaticalErrorAlert();
+  return const DevErrorAlert();
 }

@@ -13,7 +13,6 @@ class RoleRepository {
         if (user == null) return const Role(Roles.undefined);
         final claims = (await user.getIdTokenResult(true)).claims!;
         final role = _claimsToRole(claims);
-        print('=================== ${role.localizedName}===================');
         return role;
       },
     );

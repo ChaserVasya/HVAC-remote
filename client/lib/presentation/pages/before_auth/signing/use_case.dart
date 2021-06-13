@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:hvac_remote_client/application/notice/notice_dialog.dart';
+import 'package:hvac_remote_client/application/notice/notices.dart';
 import 'package:hvac_remote_client/application/throwed/exception_handler.dart';
 
 import 'package:hvac_remote_client/application/routes.dart';
@@ -22,9 +24,14 @@ class SigningUseCase {
   void signIn(String email, String password, BuildContext context) async {
     try {
       _viewModel.state = SigningStates.sending;
-      await _auth.signIn(email, password);
-      _viewModel.state = SigningStates.signed;
-      Navigator.pushReplacementNamed(context, RoutesNames.home);
+      final ok = await _auth.signIn(email, password);
+      if (ok) {
+        _viewModel.state = SigningStates.signed;
+        Navigator.pushReplacementNamed(context, RoutesNames.home);
+      } else {
+        final confirmed = await showNoticeDialog(context, const SendEmailAgainNotice());
+        if (confirmed) await _auth.sendEmailVerification();
+      }
     } catch (e, s) {
       ExceptionHandler.handle(e, s, context);
     } finally {

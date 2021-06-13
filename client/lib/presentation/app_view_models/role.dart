@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 import 'package:hvac_remote_client/application/service_locator.dart';
 import 'package:hvac_remote_client/domain/entities/role.dart';

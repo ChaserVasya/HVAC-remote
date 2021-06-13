@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:728764341397:android:6acc8ddae83925380d4f9c",
+        "mobilesdk_app_id": "1:728764341397:android:c4c0feb3efb4619f0d4f9c",
         "android_client_info": {
-          "package_name": "com.example.hvac_remote_client"
+          "package_name": "com.hvac.remote.client"
         }
       },
       "oauth_client": [

@@ -1,31 +1,26 @@
 
 import {https, logger} from "firebase-functions";
 import admin = require("firebase-admin")
-import {Role} from "../entities/user";
-import {RoleClaimNotExist} from "../throwed/errors";
-import {Exception, UnauthorizedAccess} from "../throwed/exceptions";
+import {Role} from "../../entities/user";
+import {RoleClaimNotExist} from "../../throwed/errors";
+import {UnauthorizedAccess} from "../../throwed/exceptions";
 
 
 export const changeRole = https.onCall(
     async (password, context) => {
-      try {
-        if (!context.auth) throw new UnauthorizedAccess();
+      if (!context.auth) throw new UnauthorizedAccess();
 
-        const newRole = await getRoleWithSamePassword(password);
-        const uid = context.auth.uid;
+      const newRole = await getRoleWithSamePassword(password);
+      const uid = context.auth.uid;
 
-        if (newRole) {
-          await updateUserDoc(uid, newRole);
-          await refreshClaimsWithNewRole(uid, newRole);
-          logSuccess(uid, newRole);
-          return true;
-        } else {
-          warnAboutUnsuccess(uid);
-          return false;
-        }
-      } catch (e) {
-        if (!(e instanceof Exception)) logger.error(e.code, e.details);
-        throw e;
+      if (newRole) {
+        await updateUserDoc(uid, newRole);
+        await refreshClaimsWithNewRole(uid, newRole);
+        logSuccess(uid, newRole);
+        return true;
+      } else {
+        warnAboutUnsuccess(uid);
+        return false;
       }
     },
 );

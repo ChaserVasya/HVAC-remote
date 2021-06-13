@@ -52,6 +52,8 @@ ExceptionAlert switchFirebaseExceptionAlert(FirebaseException e) {
       return const TooManyRequestsAlert();
     case 'network-request-failed':
       return const NetworkRequestFailedAlert();
+    case 'unknown':
+      return const EmptyStringAlert();
     default:
       String? message = e.message;
       final details = (message != null) ? (e.plugin + '/' + e.code + '\n' + message) : (e.plugin + '/' + e.code);

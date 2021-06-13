@@ -6,17 +6,18 @@ class AuthService {
 
   Future<void> createAccount(String rawEmail, String password, String repeated) async {
     final email = rawEmail.trim();
-    if (password.isEmpty) throw const EmptyPasswordException();
-    if (repeated != password) throw const IncorrectrepeatedException();
+    if (password.isEmpty) throw const EmptyStringException();
+    if (repeated != password) throw const IncorrectRepeatedException();
     await _auth.createUserWithEmailAndPassword(email: email, password: password);
     await _auth.currentUser!.sendEmailVerification();
   }
 
-  Future<void> signIn(String rawEmail, String password) async {
+  Future<bool> signIn(String rawEmail, String password) async {
     final email = rawEmail.trim();
-    if (password.isEmpty) throw const EmptyPasswordException();
+    if (password.isEmpty) throw const EmptyStringException();
     final userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
-    if (!userCredential.user!.emailVerified) throw const EmailNotVerifiedException();
+    if (!userCredential.user!.emailVerified) return false;
+    return true;
   }
 
   Future<void> signOut() async {

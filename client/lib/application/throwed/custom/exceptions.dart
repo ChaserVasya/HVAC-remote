@@ -7,17 +7,10 @@ class EmailNotVerifiedException extends CustomException {
         );
 }
 
-class IncorrectrepeatedException extends CustomException {
-  const IncorrectrepeatedException()
+class IncorrectRepeatedException extends CustomException {
+  const IncorrectRepeatedException()
       : super(
           message: 'Repeate password mismatch with original password.',
-        );
-}
-
-class InvalidArgumentException extends CustomException {
-  const InvalidArgumentException()
-      : super(
-          message: 'Have been passed invalid argument.',
         );
 }
 
@@ -29,10 +22,11 @@ class RoleClaimNotExistException extends CustomException {
         );
 }
 
-class EmptyPasswordException extends CustomException {
-  const EmptyPasswordException()
+//duplicates firebase unknown exception code, but for my own purposes
+class EmptyStringException extends CustomException {
+  const EmptyStringException()
       : super(
-          message: 'Empty password not allowed.',
+          message: 'Empty string not allowed.',
         );
 }
 

@@ -5,6 +5,6 @@ abstract class CustomException implements Exception {
 
   @override
   String toString() {
-    return 'CustomException: ' + message;
+    return '$runtimeType: $message';
   }
 }

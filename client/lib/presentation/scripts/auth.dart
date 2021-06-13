@@ -12,10 +12,14 @@ final AuthService _auth = AuthService();
 void resetPassword(BuildContext context) async {
   try {
     String? email;
-    if (!_auth.wasAuthed) email = await showFieldDialog(context, ResetPasswordContent());
-    if (email == null) return;
+
+    if (!_auth.wasAuthed) {
+      email = await showFieldDialog(context, ResetPasswordContent());
+      if (email == null) return; //user changed his mind about reseting
+    }
+
     await _auth.sendPasswordResetEmail(email);
-    showNoticeDialog(context, const PasswordResetEmailSendedNotice());
+    showNoticeDialog(context, const ResetEmailSendedNotice());
   } catch (e, s) {
     ExceptionHandler.handle(e, s, context);
   }

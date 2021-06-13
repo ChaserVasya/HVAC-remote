@@ -18,19 +18,19 @@ class AccountCreatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _pageContext = context;
     return PageTemplate(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/logo.png', width: 150, height: 150),
-            const Padding(padding: EdgeInsets.only(top: 80)),
-            const _AccountCreateFutureBuilder(),
-            TextButton(
-              child: const Text('Зарегистрированы? Войти'),
-              onPressed: () => Navigator.pushReplacementNamed(_pageContext, RoutesNames.signIn),
-            ),
-          ],
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: Image.asset('assets/images/logo.png', height: 150, width: 150),
+          ),
+          const _AccountCreateFutureBuilder(),
+          TextButton(
+            child: const Text('Зарегистрированы? Войти'),
+            onPressed: () => Navigator.pushReplacementNamed(_pageContext, RoutesNames.signIn),
+          ),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hvac_remote_client/application/routes.dart';
 
 class PageTemplate extends StatelessWidget {
@@ -22,8 +23,13 @@ class PageTemplate extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      drawer: (appBarTitle == null) ? null : const _Drawer(),
-      appBar: (appBarTitle == null) ? null : AppBar(title: Text(appBarTitle!)),
+      drawer: (appBarTitle == null) ? null : const SafeArea(child: _Drawer()),
+      appBar: (appBarTitle == null)
+          ? null
+          : AppBar(
+              title: Text(appBarTitle!),
+              brightness: Brightness.dark,
+            ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: widget,
@@ -43,7 +49,7 @@ class _Drawer extends StatelessWidget {
           Container(
             alignment: Alignment.center,
             color: Colors.blue,
-            height: 60,
+            height: kToolbarHeight,
             width: double.infinity,
             child: const Text(
               'Вкладки',

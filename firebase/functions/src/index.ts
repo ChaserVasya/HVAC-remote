@@ -5,9 +5,9 @@
 import admin = require("firebase-admin")
 admin.initializeApp();
 
-export {changeRole} from "./functions/change-role";
-export {deleteUserData} from "./functions/delete-user-data";
-export {createUserDoc} from "./functions/create-user-doc";
-export {setCustomClaims} from "./functions/set-custom-claims";
+export {changeRole} from "./functions/auth/change-role";
+export {deleteUserData} from "./functions/auth/delete-user-data";
+export {createUserDoc} from "./functions/auth/create-user-doc";
+export {setCustomClaims} from "./functions/auth/set-custom-claims";
 
 // TODO do app check
