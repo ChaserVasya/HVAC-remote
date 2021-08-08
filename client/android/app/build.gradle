@@ -25,6 +25,7 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+apply plugin: 'com.google.firebase.crashlytics'
 
 apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -70,12 +71,12 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release 
-
+            firebaseCrashlytics {
+                mappingFileUploadEnabled true
+            }
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile(
-                    'proguard-android-optimize.txt'),
-                    'proguard-rules.pro'        
+            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')     
         }
     }
 }
@@ -91,4 +92,3 @@ dependencies {
 }
 
 
-apply plugin: 'com.google.firebase.crashlytics'
