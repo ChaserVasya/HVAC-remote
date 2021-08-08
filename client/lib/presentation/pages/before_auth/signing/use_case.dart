@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:hvac_remote_client/application/notice/notice_dialog.dart';
-import 'package:hvac_remote_client/application/notice/notices.dart';
-import 'package:hvac_remote_client/application/throwed/exception_handler.dart';
+import 'package:hvac_remote_client/application/dialogs/content/notice.dart';
+import 'package:hvac_remote_client/presentation/dialogs/notice_dialog.dart';
+import 'package:hvac_remote_client/application/exception/exception_handler.dart';
 
 import 'package:hvac_remote_client/application/routes.dart';
 import 'package:hvac_remote_client/domain/services/auth.dart';

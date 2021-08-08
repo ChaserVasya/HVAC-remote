@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-
-import 'notice.dart';
+import 'package:hvac_remote_client/application/dialogs/content/interfaces/notice.dart';
 
 class NoticeDialog extends AlertDialog {
   NoticeDialog(
     BuildContext context,
-    Notice notice, {
+    NoticeDialogContent notice, {
     String? buttonLabel,
     Key? key,
   }) : super(
           key: key,
-          content: Text(notice.message, textAlign: TextAlign.justify),
+          content: Text(
+            notice.message,
+            textAlign: TextAlign.left,
+          ),
           actions: [
             ElevatedButton(
               child: Text((buttonLabel == null) ? 'Продолжить' : buttonLabel),
@@ -22,7 +24,7 @@ class NoticeDialog extends AlertDialog {
 
 Future<bool> showNoticeDialog(
   BuildContext navigatorDescendalContext,
-  Notice notice,
+  NoticeDialogContent notice,
 ) async {
   final result = await showDialog<bool>(
     context: navigatorDescendalContext,

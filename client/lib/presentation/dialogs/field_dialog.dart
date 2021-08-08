@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hvac_remote_client/application/dialogs/content/interfaces/field.dart';
 import 'package:hvac_remote_client/presentation/templates/field_template.dart';
-
-import 'contents.dart';
 
 class FieldDialog extends StatelessWidget {
   FieldDialog(this.content, {Key? key}) : super(key: key);
@@ -15,11 +14,17 @@ class FieldDialog extends StatelessWidget {
     return Center(
       child: SingleChildScrollView(
         child: AlertDialog(
-          title: Text(content.title),
+          title: Text(
+            content.title,
+            textAlign: TextAlign.center,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(content.message, textAlign: TextAlign.justify),
+              Text(
+                content.message,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 10),
               FieldTemplate(
                 labelText: content.labelText,

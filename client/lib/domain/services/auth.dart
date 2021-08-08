@@ -1,20 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hvac_remote_client/application/throwed/custom/exceptions.dart';
+import 'package:hvac_remote_client/application/exception/exceptions.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> createAccount(String rawEmail, String password, String repeated) async {
     final email = rawEmail.trim();
-    if (password.isEmpty) throw const EmptyStringException();
-    if (repeated != password) throw const IncorrectRepeatedException();
+    if (password.isEmpty) throw EmptyStringException();
+    if (repeated != password) throw IncorrectRepeatedException();
     await _auth.createUserWithEmailAndPassword(email: email, password: password);
     await _auth.currentUser!.sendEmailVerification();
   }
 
   Future<bool> signIn(String rawEmail, String password) async {
     final email = rawEmail.trim();
-    if (password.isEmpty) throw const EmptyStringException();
+    if (password.isEmpty) throw EmptyStringException();
     final userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
     if (!userCredential.user!.emailVerified) return false;
     return true;

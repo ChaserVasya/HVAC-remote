@@ -27,13 +27,14 @@ dependencies:
 
   get_it: ^7.0.0
   provider: ^5.0.0
+  flutter_bloc: ^7.0.0
 
   firebase_core: ^1.2.0
-  firebase_auth: ^1.1.0
-  cloud_functions: ^1.1.0
+  firebase_auth: ^3.0.0
+  cloud_functions: ^3.0.0
   firebase_crashlytics: ^2.0.6
 
-
+  fl_chart: ^0.36.1   
 
 dev_dependencies:
   test:

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hvac_remote_client/application/action/contents.dart';
-import 'package:hvac_remote_client/application/action/field_dialog.dart';
-import 'package:hvac_remote_client/application/throwed/exception_handler.dart';
-import 'package:hvac_remote_client/application/notice/notice_dialog.dart';
-import 'package:hvac_remote_client/application/notice/notices.dart';
+import 'package:hvac_remote_client/application/dialogs/content/field.dart';
+import 'package:hvac_remote_client/application/dialogs/content/notice.dart';
+import 'package:hvac_remote_client/presentation/dialogs/field_dialog.dart';
+import 'package:hvac_remote_client/application/exception/exception_handler.dart';
+import 'package:hvac_remote_client/presentation/dialogs/notice_dialog.dart';
 import 'package:hvac_remote_client/application/routes.dart';
 import 'package:hvac_remote_client/domain/services/auth.dart';
 
@@ -14,7 +14,7 @@ void resetPassword(BuildContext context) async {
     String? email;
 
     if (!_auth.wasAuthed) {
-      email = await showFieldDialog(context, ResetPasswordContent());
+      email = await showFieldDialog(context, const ResetPasswordContent());
       if (email == null) return; //user changed his mind about reseting
     }
 

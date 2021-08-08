@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
-
-import 'common/exception_alert.dart';
+import 'package:hvac_remote_client/application/dialogs/content/interfaces/alert.dart';
 
 class ExceptionDialog extends AlertDialog {
   ExceptionDialog(
     BuildContext context,
-    ExceptionAlert alert, {
+    AlertDialogContent alert, {
     Key? key,
   }) : super(
           scrollable: true,
           key: key,
-          title: Text(alert.titleForUser, textAlign: TextAlign.justify),
+          title: Text(
+            alert.titleForUser,
+            textAlign: TextAlign.center,
+          ),
           actions: (alert.actionsBuilder != null) ? alert.actionsBuilder!(context) : null,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(alert.textForUser, textAlign: TextAlign.justify),
+              Text(
+                alert.textForUser,
+                textAlign: TextAlign.center,
+              ),
               if (alert.details != null)
                 ExpansionTile(
                   title: const Text('Показать детали'),
@@ -27,7 +32,7 @@ class ExceptionDialog extends AlertDialog {
 }
 
 void showExceptionDialog(
-  ExceptionAlert alert,
+  AlertDialogContent alert,
   BuildContext navigatorDescendantContext,
 ) {
   showDialog(

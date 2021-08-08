@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hvac_remote_client/application/throwed/custom/exceptions.dart';
+import 'package:hvac_remote_client/application/exception/exceptions.dart';
 import 'package:hvac_remote_client/domain/entities/role.dart';
 
 class RoleRepository {
@@ -27,7 +27,7 @@ class RoleRepository {
 
   Future<void> changeRole(String password) async {
     final bool ok = (await _functions.httpsCallable('changeRole').call(password)).data;
-    if (!ok) throw const RoleNotChangedException();
+    if (!ok) throw RoleNotChangedException();
     _auth.currentUser!.getIdToken(true); //to force token refreshing
   }
 

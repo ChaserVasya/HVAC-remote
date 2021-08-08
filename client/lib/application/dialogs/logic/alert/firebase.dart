@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hvac_remote_client/application/throwed/common/alerts.dart';
-import 'package:hvac_remote_client/application/throwed/common/exception_alert.dart';
-
-import 'alerts.dart';
+import 'package:hvac_remote_client/application/dialogs/content/alert/common.dart';
+import 'package:hvac_remote_client/application/dialogs/content/alert/custom.dart';
+import 'package:hvac_remote_client/application/dialogs/content/interfaces/alert.dart';
 
 /*
 exception-codes have been taken from firebase_auth.dart. Not of all are needed. Unneeded exception-codes listed for the record. 
@@ -24,7 +23,7 @@ codes:
   weak-password,
   wrong-password,
 */
-ExceptionAlert switchFirebaseExceptionAlert(FirebaseException e) {
+AlertDialogContent switchFirebaseExceptionAlert(FirebaseException e) {
   switch (e.code) {
     case 'email-already-in-use':
       return const EmailAlreadyInUseAlert();

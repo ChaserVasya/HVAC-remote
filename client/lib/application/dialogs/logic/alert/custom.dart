@@ -1,11 +1,10 @@
-import 'package:hvac_remote_client/application/throwed/common/alerts.dart';
-import 'package:hvac_remote_client/application/throwed/common/exception_alert.dart';
+import 'package:hvac_remote_client/application/dialogs/content/alert/common.dart';
+import 'package:hvac_remote_client/application/dialogs/content/alert/firebase.dart';
+import 'package:hvac_remote_client/application/dialogs/content/interfaces/alert.dart';
+import 'package:hvac_remote_client/application/exception/exceptions.dart';
+import 'package:hvac_remote_client/application/exception/custom_exception_interface.dart';
 
-import 'alerts.dart';
-import 'custom_exception.dart';
-import 'exceptions.dart';
-
-ExceptionAlert switchCustomExceptionAlert(CustomException e) {
+AlertDialogContent switchCustomExceptionAlert(CustomException e) {
   // ignore: dead_code
   if (false) {
     // for align

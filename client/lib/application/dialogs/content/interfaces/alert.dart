@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-abstract class ExceptionAlert {
-  const ExceptionAlert({
+abstract class AlertDialogContent {
+  const AlertDialogContent({
     required this.titleForUser,
     required this.textForUser,
     this.details,
@@ -11,5 +11,7 @@ abstract class ExceptionAlert {
   final String titleForUser;
   final String textForUser;
   final String? details;
-  final List<Widget> Function(BuildContext)? actionsBuilder;
+  final ActionBuilder? actionsBuilder;
 }
+
+typedef ActionBuilder = List<Widget> Function(BuildContext);

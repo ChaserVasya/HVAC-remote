@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:hvac_remote_client/application/throwed/exception_handler.dart';
+import 'package:hvac_remote_client/application/exception/exception_handler.dart';
 import 'package:hvac_remote_client/application/routes.dart';
 import 'package:hvac_remote_client/application/service_locator.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hvac_remote_client/application/throwed/exception_handler.dart';
-import 'package:hvac_remote_client/application/notice/notice_dialog.dart';
-import 'package:hvac_remote_client/application/notice/notices.dart';
+import 'package:hvac_remote_client/application/dialogs/content/notice.dart';
+import 'package:hvac_remote_client/application/exception/exception_handler.dart';
+import 'package:hvac_remote_client/presentation/dialogs/notice_dialog.dart';
 import 'package:hvac_remote_client/domain/repos/role.dart';
 
 import 'view_model.dart';
@@ -22,7 +22,7 @@ class ChangeRoleUseCase {
       _viewModel.state = ChangeRoleStates.changing;
       await _roleRepo.changeRole(password);
 
-      showNoticeDialog(context, NewRoleNotice());
+      showNoticeDialog(context, const NewRoleNotice());
     } catch (e, s) {
       ExceptionHandler.handle(e, s, context);
     } finally {
