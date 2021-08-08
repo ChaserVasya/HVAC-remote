@@ -14,7 +14,11 @@ void main() {
       await _setRunAppPresets();
       runApp(const Application());
     },
-    (e, s) => (setCrashlytics) ? FirebaseCrashlytics.instance.recordError(e, s) : null,
+    (e, s) {
+      if (setCrashlytics) {
+        FirebaseCrashlytics.instance.recordError(e, s, printDetails: true);
+      }
+    },
   );
 }
 
