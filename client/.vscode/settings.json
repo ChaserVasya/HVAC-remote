@@ -1,6 +1,0 @@
-{
-    "editor.wordWrap": "on",
-    "editor.autoClosingBrackets": "beforeWhitespace",
-    "dart.completeFunctionCalls": false,
-    "dart.enableCompletionCommitCharacters": false,
-}
