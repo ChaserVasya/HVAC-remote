@@ -121,5 +121,6 @@ lib/generated_plugin_registrant.dart
 #**/ios/**/Assets.xcassets/**/*.png
 #**/android/**/res/**/*.png
 
-experiments/
+# experiments/
 .vscode/
+test/things_test.dart
