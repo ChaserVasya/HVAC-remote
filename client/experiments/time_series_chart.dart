@@ -109,7 +109,17 @@ class _TimeSeriesChart extends flutter.TimeSeriesChart {
         );
 
   @override
-  common.TimeSeriesChart createCommonChart(_) => commonChart;
+  common.TimeSeriesChart createCommonChart(_) => commonChart
+    ..addLifecycleListener(
+      common.LifecycleListener<DateTime>(
+        onAnimationComplete: () => print("-"),
+        onData: (_) => print("--"),
+        onPostrender: (_) => print("---"),
+        onAxisConfigured: () => print("----"),
+        onPostprocess: (_) => print("-----"),
+        onPreprocess: (_) => print("------"),
+      ),
+    );
 }
 
 ///Needed indexes are computed in super only like intermediate value

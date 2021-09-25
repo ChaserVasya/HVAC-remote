@@ -1,28 +1,61 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'common_staged_chart.dart';
-import 'pan_and_zoom_behaviour.dart';
 
 class TimeSeries {
-  final DateTime dateTime;
-  final num value;
+  final int secondsSinceEpoch;
+  final int value;
 
-  const TimeSeries({required this.value, required this.dateTime});
+  const TimeSeries({required this.value, required this.secondsSinceEpoch});
+
+  DateTime get dateTime => DateTime.fromMillisecondsSinceEpoch(secondsSinceEpoch * Duration.millisecondsPerSecond);
 
   @override
-  String toString() => '\n' '$dateTime: $value';
+  String toString() => jsonEncode(toJson());
+
+  //JSON
+
+  Map<String, dynamic> toJson() => {
+        'value': value,
+        'secondsSinceEpoch': secondsSinceEpoch,
+      };
+
+  TimeSeries.fromJson(Map<String, dynamic> json)
+      : value = json['value'],
+        secondsSinceEpoch = json['secondsSinceEpoch'];
 }
 
-class DataProvider {
-  static const int maxStageIndex = 4;
-  static const int datumPerAveraging = 5;
+class DataRepository {
+  static DataRepository? _instance;
+  static DataRepository get instance => _instance ??= DataRepository._();
+  DataRepository._();
 
-  final int _firstStageLength = pow(10, 6).toInt();
+  static const _fileName = 'time_series_data.json';
+
+  final StagedTimeSeries _timeSeries = DataBuilder.build();
+
+  //  StagedTimeSeries _initTimeSeries() {
+  // final dir = await getTemporaryDirectory();
+  // final file = File('${dir.path}/$_fileName');
+
+  // final isExist = await file.exists();
+
+  // final reader = file.openRead().transform(utf8.decoder).transform(const JsonDecoder());
+
+  // reader.take(count);
+  // if (isExist) return file;
+  // file.length();
+
+  //   return _DataBuilder.build();
+  // }
 
   List<TimeSeries> get startData {
-    const startDataAmount = CommonPanAndZoomBehavior.maxDataForChart;
+    const startDataAmount = 30;
 
     final startStageData = _timeSeries[0]!;
     final center = startStageData.length / 2;
@@ -35,10 +68,7 @@ class DataProvider {
         .toList();
   }
 
-  //TODO refactor min-max-chain: min(max(min(...)))
-  //TODO check docs correctness
-  ///[endPoint] can be negative, representing backing in time from reference
-  ///point.
+  ///[endPoint] can be negative, representing backing in time from reference point.
   List<TimeSeries> getDataAroundPoint({
     required int stageIndex,
     required int datumAmount,
@@ -53,8 +83,8 @@ class DataProvider {
     return dataList.getRange(startIndex, endIndex + 1).toList();
   }
 
+  //TODO check cases, when there is not requested stage (-1,-2, 1000, etc.).
   List<TimeSeries> getDataByRange({
-    //TODO check cases, when there is not requested stage (-1,-2, 1000, etc.).
     required int stageIndex,
     required DateTimeRange range,
     int? limit,
@@ -81,51 +111,105 @@ class DataProvider {
     }
     return mid; //nearest from bottom
   }
+}
 
-  static DataProvider? _instance;
-  static DataProvider get instance => _instance ??= DataProvider._();
+class CircledRandomIntList {
+  final List<int> _randPattern = () {
+    final rand = Random();
+    List<int> randPattern = List.generate(_length, (_) => rand.nextInt(100));
+    return randPattern;
+  }();
 
-  DataProvider._() {
-    _timeSeries[maxStageIndex] = List.generate(
+  int _current = 0;
+
+  static const _length = 1000;
+
+  int next() {
+    if (_current == _length) _current = 0;
+    return _randPattern[_current++];
+  }
+}
+
+class DataBuilder {
+  //TODO monthes have different amount of days. What is the best way to merge them?
+  static const List<int> _datumPerAveraging = [
+    DateTime.monthsPerYear,
+    DateTime.daysPerWeek * 4,
+    Duration.hoursPerDay,
+    Duration.minutesPerHour,
+    Duration.secondsPerMinute ~/ _timeStepSec,
+  ];
+
+  static const int _timeStepSec = 200;
+
+  static Map<int, List<TimeSeries>> build() {
+    final int _firstStageLength = pow(10, 7.5).toInt();
+    final Map<int, List<TimeSeries>> _timeSeries = {};
+
+    final intGenerator = CircledRandomIntList();
+
+    _timeSeries[Stage.max] = List.generate(
       _firstStageLength,
       (i) => TimeSeries(
-        value: Random().nextInt(100),
-        dateTime: DateTime(2000, 1, 1, 0, 0, i * 10),
+        value: intGenerator.next(),
+        secondsSinceEpoch: i * _timeStepSec,
       ),
+      growable: false,
     );
 
-    for (int newStageIndex = maxStageIndex - 1; newStageIndex >= 0; newStageIndex--) {
+    // _timeSeries[Stage.max] = List.generate(
+    //   _firstStageLength,
+    //   (i) => TimeSeries(
+    //     value: Random().nextInt(100),
+    //     seconds: i * _timeStepSec,
+    //   ),
+    // );
+
+    for (int newStageIndex = Stage.max - 1; newStageIndex >= 0; newStageIndex--) {
       final averagingDataStage = _timeSeries[newStageIndex + 1]!;
-      final newStageLength = averagingDataStage.length ~/ datumPerAveraging;
+      final newStageLength = averagingDataStage.length ~/ _datumPerAveraging[newStageIndex];
 
       _timeSeries[newStageIndex] = List.generate(newStageLength, (averagedValueIndex) {
-        final batchStart = averagedValueIndex * datumPerAveraging;
-        final batchEnd = (averagedValueIndex + 1) * datumPerAveraging;
+        final batchStart = averagedValueIndex * _datumPerAveraging[newStageIndex];
+        final batchEnd = (averagedValueIndex + 1) * _datumPerAveraging[newStageIndex];
         return _average(averagingDataStage.getRange(batchStart, batchEnd));
       });
+      print('next stage generated');
     }
+    print('builded');
+    return _timeSeries;
   }
 
-  TimeSeries _average(Iterable<TimeSeries> timeSeries) {
+  static TimeSeries _average(Iterable<TimeSeries> timeSeries) {
     final averageValue = timeSeries
             .map<num>((e) => e.value) //
             .reduce((sum, e) => sum + e) //
         /
         timeSeries.length;
 
-    final averageTimeData = DateTime.fromMillisecondsSinceEpoch(
-      timeSeries
-              .map<num>((e) => e.dateTime.millisecondsSinceEpoch) //
-              .reduce((sum, e) => sum + e) //
-          ~/
-          timeSeries.length,
-    );
+    // final averageTimeData = DateTime.fromMillisecondsSinceEpoch(
+    //   timeSeries
+    //           .map<num>((e) => e.dateTime.millisecondsSinceEpoch) //
+    //           .reduce((sum, e) => sum + e) //
+    //       ~/
+    //       timeSeries.length,
+    // );
 
+    final averageSeconds = timeSeries
+            .map<num>((e) => e.secondsSinceEpoch) //
+            .reduce((sum, e) => sum + e) //
+        ~/
+        timeSeries.length;
+
+    // return TimeSeries(
+    //   value: averageValue.toInt(),
+    //   dateTime: averageTimeData,
+    // );
     return TimeSeries(
-      value: averageValue,
-      dateTime: averageTimeData,
+      value: averageValue.toInt(),
+      secondsSinceEpoch: averageSeconds,
     );
   }
-
-  final Map<int, List<TimeSeries>> _timeSeries = {};
 }
+
+typedef StagedTimeSeries = Map<int, List<TimeSeries>>;

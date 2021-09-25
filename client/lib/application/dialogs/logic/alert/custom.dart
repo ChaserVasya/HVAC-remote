@@ -19,5 +19,5 @@ AlertDialogContent switchCustomExceptionAlert(CustomException e) {
   }
 }
 
-//TODO decide is EmailNotVerifyed an Exception or a valid behavior (null\false) 
+//TODO decide is EmailNotVerifyed an Exception or a valid behavior (null\false)
 //TODO resort other Exceptions in the same order

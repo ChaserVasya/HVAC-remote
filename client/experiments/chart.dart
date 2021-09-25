@@ -21,7 +21,7 @@ class _MyApp extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(
-                  height: 600,
+                  height: 500,
                   child: MyTimeSeriesChart(),
                 ),
               ],
@@ -53,6 +53,8 @@ final startData = [
     id: 'Temperature',
     domainFn: (datum, _) => datum.dateTime,
     measureFn: (datum, _) => datum.value,
-    data: DataProvider.instance.startData,
+    data: DataRepository.instance.startData,
   ),
 ];
+
+
