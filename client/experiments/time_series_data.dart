@@ -1,33 +1,33 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'common_staged_chart.dart';
 
+import '../test/test_data/int_random.dart';
+
 class TimeSeries {
-  final int secondsSinceEpoch;
+  final int millisecondsSinceEpoch;
   final int value;
 
-  const TimeSeries({required this.value, required this.secondsSinceEpoch});
+  const TimeSeries({required this.value, required this.millisecondsSinceEpoch});
 
-  DateTime get dateTime => DateTime.fromMillisecondsSinceEpoch(secondsSinceEpoch * Duration.millisecondsPerSecond);
+  DateTime get dateTime => DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
 
   @override
   String toString() => jsonEncode(toJson());
 
   //JSON
 
-  Map<String, dynamic> toJson() => {
+  Json toJson() => {
         'value': value,
-        'secondsSinceEpoch': secondsSinceEpoch,
+        'millisecondsSinceEpoch': millisecondsSinceEpoch,
       };
 
-  TimeSeries.fromJson(Map<String, dynamic> json)
+  TimeSeries.fromJson(Json json)
       : value = json['value'],
-        secondsSinceEpoch = json['secondsSinceEpoch'];
+        millisecondsSinceEpoch = json['millisecondsSinceEpoch'];
 }
 
 class DataRepository {
@@ -113,22 +113,8 @@ class DataRepository {
   }
 }
 
-class CircledRandomIntList {
-  final List<int> _randPattern = () {
-    final rand = Random();
-    List<int> randPattern = List.generate(_length, (_) => rand.nextInt(100));
-    return randPattern;
-  }();
-
-  int _current = 0;
-
-  static const _length = 1000;
-
-  int next() {
-    if (_current == _length) _current = 0;
-    return _randPattern[_current++];
-  }
-}
+///[Random.nextInt()] is slow. This class generates fixed random int list and
+///just gives the ready int from it. It is faster.
 
 class DataBuilder {
   //TODO monthes have different amount of days. What is the best way to merge them?
@@ -146,13 +132,13 @@ class DataBuilder {
     final int _firstStageLength = pow(10, 7.5).toInt();
     final Map<int, List<TimeSeries>> _timeSeries = {};
 
-    final intGenerator = CircledRandomIntList();
+    final intGenerator = SimplifiedIntRandom();
 
     _timeSeries[Stage.max] = List.generate(
       _firstStageLength,
       (i) => TimeSeries(
         value: intGenerator.next(),
-        secondsSinceEpoch: i * _timeStepSec,
+        millisecondsSinceEpoch: i * _timeStepSec,
       ),
       growable: false,
     );
@@ -196,7 +182,7 @@ class DataBuilder {
     // );
 
     final averageSeconds = timeSeries
-            .map<num>((e) => e.secondsSinceEpoch) //
+            .map<num>((e) => e.millisecondsSinceEpoch) //
             .reduce((sum, e) => sum + e) //
         ~/
         timeSeries.length;
@@ -207,9 +193,10 @@ class DataBuilder {
     // );
     return TimeSeries(
       value: averageValue.toInt(),
-      secondsSinceEpoch: averageSeconds,
+      millisecondsSinceEpoch: averageSeconds,
     );
   }
 }
 
 typedef StagedTimeSeries = Map<int, List<TimeSeries>>;
+typedef Json = Map<String, dynamic>;

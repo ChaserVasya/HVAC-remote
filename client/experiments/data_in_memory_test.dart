@@ -17,7 +17,7 @@ class _MyApp extends StatelessWidget {
               children: [
                 TextButton(
                   child: const Text('start sodomia'),
-                  onPressed: ()=> startScenario();
+                  onPressed: () => startScenario(),
                 ),
               ],
             ),
@@ -28,7 +28,7 @@ class _MyApp extends StatelessWidget {
   }
 }
 
-Future<void> startScenario()async {
-  await saveCase();
+Future<void> startScenario() async {
+  // await saveCase();
   await readCase();
 }
