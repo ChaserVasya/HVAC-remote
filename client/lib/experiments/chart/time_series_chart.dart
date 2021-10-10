@@ -4,6 +4,7 @@ import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as flutter;
 import 'package:flutter/widgets.dart';
 
+import 'chart.dart';
 import 'pan_and_zoom_behaviour.dart';
 import 'common_staged_chart.dart';
 import 'time_series_data.dart';
@@ -31,25 +32,40 @@ class ViewportBounds {
   toString() => '\n' 'start: $startIndex, end: $endIndex';
 }
 
-class TimeSeriesChart extends StatelessWidget {
+class TimeSeriesChart extends StatefulWidget {
   const TimeSeriesChart({
     required this.seriesList,
     required this.viewport, //must be required because of [autoViewport]
     Key? key,
   }) : super(key: key);
 
-  final List<common.Series<TimeSeries, DateTime>> seriesList;
   final common.DateTimeExtents viewport;
+  final List<common.Series<TimeSeries, DateTime>> seriesList;
+
+  @override
+  State<TimeSeriesChart> createState() => _TimeSeriesChartState();
+}
+
+class _TimeSeriesChartState extends State<TimeSeriesChart> {
+  late List<common.Series<TimeSeries, DateTime>> seriesList = widget.seriesList;
+
+  void refreshChart(List<TimeSeries> newData) {
+    setState(() {
+      seriesList = buildSeries(newData);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return _TimeSeriesChart(
+      refreshCallback: refreshChart,
       seriesList: seriesList,
-      defaultRenderer: _ProxyBarRendererConfig<DateTime>(),
-      domainAxis: common.DateTimeAxisSpec(viewport: viewport),
+      // domainAxis: common.DateTimeAxisSpec(viewport: widget.viewport),
       behaviors: [
         FlutterPanAndZoomBehavior<DateTime>(
-          commonBehavior: CommonPanAndZoomBehavior<DateTime>(),
+          commonBehavior: CommonPanAndZoomBehavior<DateTime>(
+            refreshDataCallaback: refreshChart,
+          ),
         )
       ],
     );
@@ -58,9 +74,7 @@ class TimeSeriesChart extends StatelessWidget {
 
 class _TimeSeriesChart extends flutter.TimeSeriesChart {
   late final StagedTimeSeriesChart commonChart = StagedTimeSeriesChart(
-    data: seriesList.single.data as List<TimeSeries>,
     stage: Stage(),
-    bounds: (defaultRenderer as _ProxyBarRendererConfig<DateTime>).bounds,
     layoutConfig: layoutConfig?.commonLayoutConfig,
     primaryMeasureAxis: primaryMeasureAxis?.createAxis(),
     secondaryMeasureAxis: secondaryMeasureAxis?.createAxis(),
@@ -68,11 +82,10 @@ class _TimeSeriesChart extends flutter.TimeSeriesChart {
     dateTimeFactory: dateTimeFactory,
   );
 
-  //'As' because we expected injected proxy renderer.
-  ///Viewport`s bounds as [Series.data] indexes.
-  ViewportBounds get bounds => (defaultRenderer as _ProxyBarRendererConfig).bounds;
+  final void Function(List<TimeSeries>) refreshCallback;
 
   _TimeSeriesChart({
+    required this.refreshCallback,
     required List<common.Series<TimeSeries, DateTime>> seriesList,
     bool? animate,
     Duration? animationDuration,
@@ -80,7 +93,6 @@ class _TimeSeriesChart extends flutter.TimeSeriesChart {
     common.NumericAxisSpec? primaryMeasureAxis,
     common.NumericAxisSpec? secondaryMeasureAxis,
     LinkedHashMap<String, common.NumericAxisSpec>? disjointMeasureAxes,
-    required _ProxyBarRendererConfig<DateTime> defaultRenderer,
     List<common.SeriesRendererConfig<DateTime>>? customSeriesRenderers,
     List<flutter.ChartBehavior<DateTime>>? behaviors,
     List<flutter.SelectionModelConfig<DateTime>>? selectionModels,
@@ -91,13 +103,12 @@ class _TimeSeriesChart extends flutter.TimeSeriesChart {
     flutter.UserManagedState<DateTime>? userManagedState,
   }) : super(
           seriesList,
-          animate: animate,
+          animate: animate ?? false,
           animationDuration: animationDuration,
           domainAxis: domainAxis,
           primaryMeasureAxis: primaryMeasureAxis,
           secondaryMeasureAxis: secondaryMeasureAxis,
           disjointMeasureAxes: disjointMeasureAxes,
-          defaultRenderer: defaultRenderer,
           customSeriesRenderers: customSeriesRenderers,
           behaviors: behaviors,
           selectionModels: selectionModels,
@@ -108,45 +119,20 @@ class _TimeSeriesChart extends flutter.TimeSeriesChart {
           dateTimeFactory: dateTimeFactory,
         );
 
+  bool initialized = false;
+
   @override
   common.TimeSeriesChart createCommonChart(_) => commonChart
     ..addLifecycleListener(
-      common.LifecycleListener<DateTime>(
-        onAnimationComplete: () => print("-"),
-        onData: (_) => print("--"),
-        onPostrender: (_) => print("---"),
-        onAxisConfigured: () => print("----"),
-        onPostprocess: (_) => print("-----"),
-        onPreprocess: (_) => print("------"),
-      ),
-    );
-}
+      common.LifecycleListener(onData: (_) {
+        if (initialized) return;
 
-///Needed indexes are computed in super only like intermediate value
-///between methods. Here we intercept indexes during routine work.
-class _ProxyBarRenderer<D> extends common.BarRenderer<D> {
-  final ViewportBounds bounds;
-
-  _ProxyBarRenderer(_ProxyBarRendererConfig<D> config)
-      : bounds = config.bounds,
-        super.internal(
-          config: config,
-          rendererId: common.SeriesRenderer.defaultRendererId,
+        commonChart.domainAxis!.setViewportSettings(
+          commonChart.stage.params.minScalingFactor,
+          commonChart.domainAxis!.viewportTranslatePx,
         );
 
-  ///Intersepts indexes.
-  @override
-  void addMeasureValuesFor(var _, var __, int startIndex, int endIndex) {
-    bounds.setIndexes(startIndex, endIndex);
-    super.addMeasureValuesFor(_, __, startIndex, endIndex);
-  }
-}
-
-///Provides proxy renderer.
-class _ProxyBarRendererConfig<D> extends common.BarRendererConfig<D> {
-  final ViewportBounds bounds = ViewportBounds();
-
-  ///Injects the proxy renderer.
-  @override
-  common.BarRenderer<D> build() => _ProxyBarRenderer<D>(this);
+        initialized = true;
+      }),
+    );
 }

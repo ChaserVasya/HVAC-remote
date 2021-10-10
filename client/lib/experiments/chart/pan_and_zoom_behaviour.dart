@@ -7,9 +7,12 @@ import 'package:meta/meta.dart' show immutable;
 
 import 'package:charts_flutter/src/behaviors/zoom/pan_behavior.dart' as flutter;
 import 'package:charts_flutter/src/behaviors/zoom/pan_and_zoom_behavior.dart' as flutter;
+import 'package:path/path.dart';
 
 import 'common_staged_chart.dart';
 import 'package:charts_common/src/chart/cartesian/axis/time/date_time_scale.dart';
+
+import 'time_series_data.dart';
 
 @immutable
 class FlutterPanAndZoomBehavior<D> extends flutter.PanAndZoomBehavior<D> {
@@ -21,16 +24,20 @@ class FlutterPanAndZoomBehavior<D> extends flutter.PanAndZoomBehavior<D> {
   common.PanAndZoomBehavior<D> createCommonBehavior() => commonBehavior;
 }
 
+//TODO fix: ticks throw exception if only one tick in viewport
 //TODO underscale text is rare. Fill underscale by text.
 //TODO refactor
 //TODO docs
 class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
     with flutter.FlutterPanBehaviorMixin
     implements common.PanAndZoomBehavior<D> {
+  CommonPanAndZoomBehavior({required this.refreshDataCallaback});
+
+  final void Function(List<TimeSeries>) refreshDataCallaback;
+
   @override
   String get role => 'PanAndZoom';
 
-  /// Flag which is enabled to indicate that the user is "zooming" the _chart.
   bool _isZooming = false;
 
   @override
@@ -45,7 +52,6 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
   @override
   bool onDragStart(Point<double> localPosition) {
     super.onDragStart(localPosition);
-
     _scalingFactorOnStart = _chart.domainAxis!.viewportScalingFactor;
     _isZooming = true;
 
@@ -55,12 +61,19 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
   @override
   bool onDragUpdate(Point<double> localPosition, double scale) {
     if (scale == 1.0) {
-      print("p");
       _isZooming = false;
-      return super.onDragUpdate(localPosition, scale);
+      try {
+        return super.onDragUpdate(localPosition, scale);
+      } catch (e) {
+        //TODO fix: no ticket error (Bad state: No element)
+        if (e is StateError) return true; //! no ticket error
+        rethrow;
+      }
     } else {
       _isZooming = true;
     }
+
+    domainAxisTickProvider.mode = common.PanningTickProviderMode.passThrough;
 
     cancelPanning();
 
@@ -68,13 +81,10 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
     if (!_thinner.pass) return true;
 
     if (!_isZooming || lastPosition == null) return false;
-    print("z");
 
     final domainAxis = _chart.domainAxis;
 
     if (domainAxis == null) return false;
-
-    // domainAxisTickProvider.mode = common.PanningTickProviderMode.useCachedTicks;
 
     final newScalingFactor = min(
       max(
@@ -87,10 +97,10 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
     domainAxis.setViewportSettings(
       newScalingFactor,
       domainAxis.viewportTranslatePx,
-      drawAreaWidth: _chart.drawAreaBounds.width,
-      drawAreaHeight: _chart.drawAreaBounds.height,
+      // drawAreaWidth: _chart.drawAreaBounds.width,
+      // drawAreaHeight: _chart.drawAreaBounds.height,
     );
-    _chart.redraw(skipAnimation: true, skipLayout: true);
+    _chart.redraw(skipAnimation: false, skipLayout: true);
     return true;
   }
 
@@ -98,74 +108,52 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
   bool onDragEnd(Point<double> localPosition, double scale, double pixelsPerSec) {
     _isZooming = false;
     final superRes = super.onDragEnd(localPosition, scale, pixelsPerSec);
-    _refreshStage(scale);
+    if (scale == 1.0) {
+      _maybeShiftData();
+    } else {
+      _maybeChangeStage(scale);
+    }
     return superRes;
   }
 
-  void _refreshStage(double zoomStartRelativeScale) {
-    if (zoomStartRelativeScale == 1.0) return;
+  Future<void> _maybeChangeStage(double zoomStartRelativeScale) async {
+    var stageChangeDir = _checkStageChangingNeed(zoomStartRelativeScale);
+    stageChangeDir = _chart.stage.maybeChangeStage(stageChangeDir);
+    if (stageChangeDir == null) return;
 
-    final datumAmountInViewport = _chart.bounds.datumAmountInViewport;
+    //main target - have the same viewportRange in new stage to prevent viewport leap
 
-    final neededStageChange = _needChangeStage(
-      zoomStartRelativeScale,
-      datumAmountInViewport,
-    );
+    final oldViewport = (_chart.domainAxis!.scale as DateTimeScale).viewportDomain.toRange();
 
-    if (neededStageChange == null) return;
-
-    final stageChange = _chart.stage.maybeChangeStage(neededStageChange);
-
-    if (stageChange == null) return;
-
-    final oldViewport = (_chart.domainAxis!.scale as DateTimeScale).viewportDomain;
-
-    final oldStart = oldViewport.start.millisecondsSinceEpoch;
-    final oldEnd = oldViewport.end.millisecondsSinceEpoch;
-    final oldViewportDuration = oldEnd - oldStart;
-
-    final viewportCenter = (oldStart + oldEnd) ~/ 2;
-
-    late final double newDataDuration;
-    switch (stageChange) {
+    late final Duration newChartDuration;
+    switch (stageChangeDir) {
       case Directions.increase:
-        newDataDuration = oldViewportDuration * _chart.stage.params.minScalingFactor;
-
+        newChartDuration = oldViewport.duration * _chart.stage.params.minScalingFactor;
         break;
       case Directions.decrease:
-        newDataDuration = oldViewportDuration * _chart.stage.params.maxScalingFactor;
+        newChartDuration = oldViewport.duration * _chart.stage.params.maxScalingFactor;
         break;
     }
 
-    final newStart = (viewportCenter - newDataDuration / 2).toInt();
-    final newEnd = (viewportCenter + newDataDuration / 2).toInt();
-
-    final dataRange = DateTimeRange(
-      start: DateTime.fromMillisecondsSinceEpoch(newStart),
-      end: DateTime.fromMillisecondsSinceEpoch(newEnd),
+    final center = oldViewport.start.add(oldViewport.duration ~/ 2);
+    final newDataRange = DateTimeRange(
+      start: center.subtract(newChartDuration ~/ 2),
+      end: center.add(newChartDuration ~/ 2),
     );
 
-    _chart.refreshChartData(dataRange);
+    final newData = await _chart.refreshChartData(newDataRange);
 
-    _chart.domainAxis!.scale!.setViewportSettings(_switchNewScalingFactor(stageChange), 0);
-
-    final viewportIsBoundary = _viewportIsBoundary(
-      _chart.domainAxis!.viewportScalingFactor,
+    refreshDataCallaback(newData);
+    _chart.domainAxis!.setViewportSettings(
+      _switchNewScalingFactor(stageChangeDir),
       _chart.domainAxis!.viewportTranslatePx,
     );
 
-    if (viewportIsBoundary) {
-      _chart.shiftData(
-        _chart.stage.params.maxDataForChart,
-        DateTime.fromMillisecondsSinceEpoch(viewportCenter),
-      );
-    }
-
-    _chart.redraw(skipAnimation: true, skipLayout: true);
+    print('stage ${_chart.stage.current} is set');
   }
 
-  double _switchNewScalingFactor(Directions stageChange) {
-    switch (stageChange) {
+  double _switchNewScalingFactor(Directions stageChangeDir) {
+    switch (stageChangeDir) {
       case Directions.increase:
         return _chart.stage.params.minScalingFactor;
       case Directions.decrease:
@@ -174,10 +162,7 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
   }
 
   ///Allow to change stage only if user zooms in corresponding direction
-  Directions? _needChangeStage(
-    double startRelativeScale,
-    int dataAmountInViewport,
-  ) {
+  Directions? _checkStageChangingNeed(double startRelativeScale) {
     late final Directions? scaleDir;
     if (startRelativeScale > 1.0) {
       scaleDir = Directions.increase;
@@ -189,7 +174,7 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
 
     late final Directions? scaleChangeZone;
     final dataRelativeScale = _chart.domainAxis!.viewportScalingFactor;
-    final params = (_chart as StagedTimeSeriesChart).stage.params;
+    final params = _chart.stage.params;
     if (dataRelativeScale > params.maxScalingFactor - params.stageChangeTriggeringZone) {
       scaleChangeZone = Directions.increase;
     } else if (dataRelativeScale < params.minScalingFactor + params.stageChangeTriggeringZone) {
@@ -203,17 +188,43 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
     return null;
   }
 
-  bool _viewportIsBoundary(
-    double viewportScalingFactor,
-    double viewportTranslate,
-  ) {
+  Future<void> _maybeShiftData() async {
+    final scalingFactor = _chart.domainAxis!.viewportScalingFactor;
+    final translate = _chart.domainAxis!.viewportTranslatePx;
     final width = _chart.drawAreaBounds.width;
-    final maxTranslate = -1.0 * width * (viewportScalingFactor - 1);
-    final newViewportTranslate = min(max(viewportTranslate, maxTranslate), 0.0);
 
-    if (newViewportTranslate == 0.0) return true;
-    if (newViewportTranslate == maxTranslate) return true;
-    return false;
+    final isOnTheRightEdge = translate.roundTo(3) == (width * (1 - scalingFactor)).roundTo(3);
+    final isOnTheLeftEdge = translate.roundTo(3) == 0;
+
+    if (!(isOnTheRightEdge || isOnTheLeftEdge) || scalingFactor <= 1) return;
+
+    const shiftFactor = 0.2;
+
+    final oldData = _chart.currentSeriesList.single.data as List<TimeSeries>;
+    final oldChartDataRange = DateTimeRange(
+      start: oldData.first.dateTime,
+      end: oldData.last.dateTime,
+    );
+    final shift = oldChartDataRange.duration * shiftFactor * (isOnTheLeftEdge ? -1 : 1);
+    final newChartDataRange = DateTimeRange(
+      start: oldChartDataRange.start.add(shift),
+      end: oldChartDataRange.end.add(shift),
+    );
+    final newData = await _chart.refreshChartData(newChartDataRange);
+
+    late double newTranslate;
+    final dataWidth = width * scalingFactor / oldData.length;
+    if (isOnTheLeftEdge) {
+      final actualDataShift = newData.indexOf(oldData.first);
+      newTranslate = translate - actualDataShift * dataWidth;
+    } else if (isOnTheRightEdge) {
+      final actualDataShift = newData.length - newData.indexOf(oldData.last) - 1;
+      newTranslate = translate + actualDataShift * dataWidth;
+    }
+
+    refreshDataCallaback(newData);
+    _chart.domainAxis!.setViewportSettings(scalingFactor, newTranslate);
+    stopFlingAnimation();
   }
 }
 
@@ -222,9 +233,10 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
 ///Zoom is checked so often that the _chart freezes. This class shows
 ///which checks should be allowed.
 class Thinner {
+  static const int _passing = 20;
+
   static const int _loopStart = 1;
-  static const int _loopEnd = 20;
-  static const int _passing = _loopEnd;
+  static const int _loopEnd = _passing;
 
   int _current = _loopStart;
 
@@ -234,4 +246,12 @@ class Thinner {
   }
 
   bool get pass => _current == _passing;
+}
+
+extension on common.DateTimeExtents {
+  DateTimeRange toRange() => DateTimeRange(start: start, end: end);
+}
+
+extension on double {
+  double roundTo(int decimalPlaces) => double.parse(toStringAsFixed(decimalPlaces));
 }

@@ -1,4 +1,4 @@
-package com.hvac.remote.client
+package com.hvac.remote.client 
 
 import io.flutter.embedding.android.FlutterActivity
 

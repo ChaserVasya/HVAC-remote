@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+
 import 'averager.dart';
 import 'file_manager.dart';
 import 'int_random.dart';
@@ -20,12 +23,14 @@ class DataBuilder {
 
     for (var i = 0; i < files.length; i++) {
       print('${baseStage.valueStep.value} generated');
-      final dayData = List.generate(
-        baseStage.valuesPerFile,
+
+      final data = List.generate(
+        baseStage.getValuesInFile(i),
         (_) => intGenerator.next(),
         growable: false,
       );
-      await IOJson.write(files[i], dayData);
+
+      await IOJson.write(files[i], data);
     }
   }
 
@@ -46,7 +51,7 @@ class DataBuilder {
         sourceValues = await IOJson.readAndMerge(files);
       }
 
-      final targetValues = Averager.reduceByAveraging(target.valuesPerFile, sourceValues);
+      final targetValues = Averager.reduceByAveraging(target.getValuesInFile(i), sourceValues);
       await IOJson.write(targetFiles[i], targetValues);
     }
   }

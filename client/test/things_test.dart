@@ -1,39 +1,43 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../experiments/time_series_data.dart' hide DataBuilder;
-import 'test_data/file_manager.dart';
-import 'test_data/data_builder.dart';
-import 'test_data/io_json.dart';
-import 'test_data/stage.dart';
+import 'package:hvac_remote_client/experiments/chart/time_series_data.dart';
+import 'package:hvac_remote_client/experiments/data_managing.dart';
+import 'package:hvac_remote_client/experiments/test_data/data_builder.dart';
+import 'package:hvac_remote_client/experiments/test_data/file_manager.dart';
+import 'package:hvac_remote_client/experiments/test_data/io_json.dart';
+import 'package:hvac_remote_client/experiments/test_data/stage.dart';
 
 void main() async {
   test('plug', () {});
-  await FileManager.cleanData();
-  await writeCase();
-  await readCase();
+
+  // mainTest();
+  // await FileManager.cleanData();
+  // await writeCase();
+  // await readCase();
+  // final data = await DataRepository.instance.startData();
+  // print(data);
 }
 
-Future<void> writeCase() async {
-  await DataBuilder.build();
-}
+void mainTest() {
+  test('TimeSeries hashCode', () {
+    const valuesAmount = 1000;
+    const datesAmount = 100;
 
-Future<void> readCase() async {
-  final file = (await FileManager.getFiles(stages[0])).first;
-  final timeSeries = deoptimize(await IOJson.read(file));
-  print(timeSeries.first);
-}
+    final timeStamps = <TimeSeries>[];
 
-List<TimeSeries> deoptimize(List<int> values) {
-  final timeSeries = List.generate(
-    values.length,
-    (sec) => TimeSeries(
-      value: values[sec],
-      millisecondsSinceEpoch: Stage.refPoint.millisecondsSinceEpoch + sec * Duration.millisecondsPerSecond,
-    ),
-    growable: false,
-  );
+    for (var i = 0; i < valuesAmount; i++) {
+      for (var j = 0; j < datesAmount; j++) {
+        timeStamps.add(TimeSeries(
+          value: i,
+          usSinceEpoch: j,
+        ));
+      }
+    }
 
-  return timeSeries;
+    final uniques = timeStamps.toSet().toList();
+
+    expect(uniques.length, timeStamps.length);
+  });
 }

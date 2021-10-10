@@ -8,7 +8,9 @@ import 'package:hvac_remote_client/application/application.dart';
 
 bool setCrashlytics = false;
 
-void main() {
+void main() {}
+
+void _main() {
   runZonedGuarded<Future<void>>(
     () async {
       await _setRunAppPresets();

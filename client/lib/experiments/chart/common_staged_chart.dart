@@ -17,13 +17,8 @@ class StagedTimeSeriesChart extends common.TimeSeriesChart {
 
   //TODO Replace this comment in right place.
   ///During zoom proccess end always equals data end. Not viewport`s end
-  final ViewportBounds bounds;
-
-  final List<TimeSeries> data;
 
   StagedTimeSeriesChart({
-    required this.data,
-    required this.bounds,
     required this.stage,
     bool? vertical,
     LayoutConfig? layoutConfig,
@@ -40,28 +35,12 @@ class StagedTimeSeriesChart extends common.TimeSeriesChart {
           dateTimeFactory: dateTimeFactory ?? const LocalDateTimeFactory(),
         );
 
-  ///Recenters chart
-  void shiftData(int datumAmount, DateTime newChartCenter) {
-    final newData = DataRepository.instance.getDataAroundPoint(
+  Future<List<TimeSeries>> refreshChartData(DateTimeRange chartDataRange, [int? limit]) async {
+    return await DataRepository.instance.getDataByRange(
       stageIndex: stage.current,
-      datumAmount: datumAmount,
-      newChartCenter: newChartCenter,
+      range: chartDataRange,
+      limit: limit,
     );
-    data
-      ..clear()
-      ..addAll(newData);
-  }
-
-  void refreshChartData(DateTimeRange viewportRange) {
-    final newData = DataRepository.instance.getDataByRange(
-      stageIndex: stage.current,
-      range: viewportRange,
-    );
-    //TODO Can I manipulate with [currentSeriesList]? Are [List]s in them the same?
-    data
-      ..clear()
-      ..addAll(newData);
-    print('stage ${stage.current} is set');
   }
 }
 
@@ -70,24 +49,26 @@ class Stage {
   static const int max = 5;
   static const int min = 0;
 
-  int _current = min;
+  static int _current = min;
   int get current => _current;
 
   ZoomParameters _params = _zoomParamsPerStage[min];
   ZoomParameters get params => _params;
 
   ///Doesn`t change stage if [current] is boundary.
-  Directions? maybeChangeStage(Directions stageChangeDir) {
+  Directions? maybeChangeStage(Directions? stageChangeDir) {
+    if (stageChangeDir == null) return null;
+
     if (_current == min && stageChangeDir == Directions.decrease) return null;
     if (_current == max && stageChangeDir == Directions.increase) return null;
 
     switch (stageChangeDir) {
       case Directions.increase:
-        ++_current;
+        _current++;
         _params = _zoomParamsPerStage[_current];
         return Directions.increase;
       case Directions.decrease:
-        --_current;
+        _current--;
         _params = _zoomParamsPerStage[_current];
         return Directions.decrease;
     }
@@ -126,26 +107,27 @@ class ZoomParameters {
   }
 }
 
+//TODO synchronize n-1`th maxDataInViewport end n`th minDataInViewport automatically
 final List<ZoomParameters> _zoomParamsPerStage = () {
   final secStage = ZoomParameters(
-    maxDataInViewport: 70,
-    minDataInViewport: 20,
+    maxDataInViewport: 120,
+    minDataInViewport: 10,
   );
   final minStage = ZoomParameters(
-    maxDataInViewport: 70,
-    minDataInViewport: 20,
+    maxDataInViewport: 120,
+    minDataInViewport: 2,
   );
   final hourStage = ZoomParameters(
-    maxDataInViewport: 40,
-    minDataInViewport: 5,
+    maxDataInViewport: 48,
+    minDataInViewport: 2,
   );
   final dayStage = ZoomParameters(
-    maxDataInViewport: 30,
-    minDataInViewport: 3,
+    maxDataInViewport: 60,
+    minDataInViewport: 2,
   );
   final monthStage = ZoomParameters(
-    maxDataInViewport: 15,
-    minDataInViewport: 3,
+    maxDataInViewport: 24,
+    minDataInViewport: 2,
   );
   final yearStage = ZoomParameters(
     maxDataInViewport: 10,
