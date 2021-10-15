@@ -38,15 +38,4 @@ class StageData {
     final end = (center + amount ~/ 2).clamp(center, data.length - 1);
     return data.getRange(start, end + 1).toList();
   }
-
-  static Future<List<TimeSeries>> getDataAroundPoint(
-      Stage stage, int datumAmount, DateTime newChartCenter) async {
-    final existingNewChartCenter = stage.floorValueTimeStamp(newChartCenter);
-    final range = DateTimeRange(
-      start: stage.addToValueTimeStamp(existingNewChartCenter, -datumAmount ~/ 2),
-      end: stage.addToValueTimeStamp(existingNewChartCenter, datumAmount ~/ 2),
-    );
-
-    return await getRange(stage, range);
-  }
 }

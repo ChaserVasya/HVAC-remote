@@ -57,16 +57,6 @@ class DataRepository {
     return await StageData.getRange(stage, requestedRange);
   }
 
-  ///[endPoint] can be negative, representing backing in time from reference point.
-  Future<List<TimeSeries>> getDataAroundPoint({
-    required int stageIndex,
-    required int datumAmount,
-    required DateTime newChartCenter,
-  }) async {
-    final stage = stages[stageIndex];
-    return await StageData.getDataAroundPoint(stage, datumAmount, newChartCenter);
-  }
-
   //TODO check cases, when there is not requested stage (-1,-2, 1000, etc.).
   Future<List<TimeSeries>> getDataByRange({
     required int stageIndex,

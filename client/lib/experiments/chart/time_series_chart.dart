@@ -1,73 +1,78 @@
 import 'dart:collection';
 
+import 'package:charts_common/common.dart';
 import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as flutter;
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'chart.dart';
 import 'pan_and_zoom_behaviour.dart';
 import 'common_staged_chart.dart';
+import 'tick_formatter_spec.dart';
+import 'tick_provider_spec.dart';
 import 'time_series_data.dart';
-
-export 'package:charts_common/common.dart' show Series, OrdinalViewport, DateTimeExtents;
-
-///Viewport`s bounds as [Series.data] indexes.
-class ViewportBounds {
-  ///Left viewport`s bound.
-  late int _startIndex;
-  int get startIndex => _startIndex;
-
-  ///Right viewport`s bound.
-  late int _endIndex;
-  int get endIndex => _endIndex;
-
-  void setIndexes(int startIndex, int endIndex) {
-    _startIndex = startIndex;
-    _endIndex = endIndex;
-  }
-
-  int get datumAmountInViewport => _endIndex - _startIndex;
-
-  @override
-  toString() => '\n' 'start: $startIndex, end: $endIndex';
-}
 
 class TimeSeriesChart extends StatefulWidget {
   const TimeSeriesChart({
     required this.seriesList,
-    required this.viewport, //must be required because of [autoViewport]
     Key? key,
   }) : super(key: key);
 
-  final common.DateTimeExtents viewport;
-  final List<common.Series<TimeSeries, DateTime>> seriesList;
+  final List<Series<TimeSeries, DateTime>> seriesList;
 
   @override
   State<TimeSeriesChart> createState() => _TimeSeriesChartState();
 }
 
 class _TimeSeriesChartState extends State<TimeSeriesChart> {
-  late List<common.Series<TimeSeries, DateTime>> seriesList = widget.seriesList;
+  late List<Series<TimeSeries, DateTime>> seriesList;
+  late DateTimeExtents viewport;
 
-  void refreshChart(List<TimeSeries> newData) {
+  void refreshChart(List<TimeSeries> newData, DateTimeRange newViewport) {
     setState(() {
       seriesList = buildSeries(newData);
+      viewport = newViewport.toExtents();
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    seriesList = widget.seriesList;
+    viewport = initViewport(seriesList.single.data);
   }
 
   @override
   Widget build(BuildContext context) {
     return _TimeSeriesChart(
-      refreshCallback: refreshChart,
       seriesList: seriesList,
-      // domainAxis: common.DateTimeAxisSpec(viewport: widget.viewport),
+      // domainAxis: DateTimeAxisSpec(viewport: widget.viewport),
+      domainAxis: DateTimeAxisSpec(
+        viewport: viewport,
+        tickProviderSpec: CustomTickProviderSpec(),
+        tickFormatterSpec: CustomFormatterSpec(),
+      ),
       behaviors: [
         FlutterPanAndZoomBehavior<DateTime>(
           commonBehavior: CommonPanAndZoomBehavior<DateTime>(
             refreshDataCallaback: refreshChart,
           ),
-        )
+        ),
       ],
+    );
+  }
+
+  DateTimeExtents initViewport(List<TimeSeries> data) {
+    final minScalingFactor = Stage().params.minScalingFactor.round();
+
+    final dataRange = data.last.dateTime.difference(data.first.dateTime);
+    final center = data.first.dateTime.add(dataRange ~/ 2);
+
+    return DateTimeExtents(
+      start: center.subtract(dataRange ~/ (2 * minScalingFactor)),
+      end: center.add(dataRange ~/ (2 * minScalingFactor)),
     );
   }
 }
@@ -82,22 +87,19 @@ class _TimeSeriesChart extends flutter.TimeSeriesChart {
     dateTimeFactory: dateTimeFactory,
   );
 
-  final void Function(List<TimeSeries>) refreshCallback;
-
   _TimeSeriesChart({
-    required this.refreshCallback,
-    required List<common.Series<TimeSeries, DateTime>> seriesList,
+    required List<Series<TimeSeries, DateTime>> seriesList,
     bool? animate,
     Duration? animationDuration,
-    common.AxisSpec? domainAxis,
-    common.NumericAxisSpec? primaryMeasureAxis,
-    common.NumericAxisSpec? secondaryMeasureAxis,
-    LinkedHashMap<String, common.NumericAxisSpec>? disjointMeasureAxes,
-    List<common.SeriesRendererConfig<DateTime>>? customSeriesRenderers,
+    AxisSpec? domainAxis,
+    NumericAxisSpec? primaryMeasureAxis,
+    NumericAxisSpec? secondaryMeasureAxis,
+    LinkedHashMap<String, NumericAxisSpec>? disjointMeasureAxes,
+    List<SeriesRendererConfig<DateTime>>? customSeriesRenderers,
     List<flutter.ChartBehavior<DateTime>>? behaviors,
     List<flutter.SelectionModelConfig<DateTime>>? selectionModels,
     flutter.LayoutConfig? layoutConfig,
-    common.DateTimeFactory? dateTimeFactory,
+    DateTimeFactory? dateTimeFactory,
     bool? defaultInteractions,
     bool? flipVerticalAxis,
     flutter.UserManagedState<DateTime>? userManagedState,
@@ -119,20 +121,26 @@ class _TimeSeriesChart extends flutter.TimeSeriesChart {
           dateTimeFactory: dateTimeFactory,
         );
 
-  bool initialized = false;
+  // bool initialized = false;
 
   @override
-  common.TimeSeriesChart createCommonChart(_) => commonChart
-    ..addLifecycleListener(
-      common.LifecycleListener(onData: (_) {
-        if (initialized) return;
+  common.TimeSeriesChart createCommonChart(_) => commonChart;
+  // ..addLifecycleListener(
+  //   LifecycleListener(onData: (_) {
+  //     if (initialized) return;
 
-        commonChart.domainAxis!.setViewportSettings(
-          commonChart.stage.params.minScalingFactor,
-          commonChart.domainAxis!.viewportTranslatePx,
-        );
+  //     commonChart.domainAxis!.setViewportSettings(
+  //       commonChart.stage.params.minScalingFactor,
+  //       commonChart.domainAxis!.viewportTranslatePx,
+  //     );
 
-        initialized = true;
-      }),
-    );
+  //     initialized = true;
+  //   }),
+  // );
+}
+
+extension on DateTimeRange {
+  DateTimeExtents toExtents() {
+    return DateTimeExtents(start: start, end: end);
+  }
 }
