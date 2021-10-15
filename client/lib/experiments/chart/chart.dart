@@ -1,5 +1,5 @@
+import 'package:charts_flutter/flutter.dart' show Series;
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'time_series_chart.dart';
 import 'time_series_data.dart';
@@ -42,10 +42,6 @@ class MyTimeSeriesChart extends StatelessWidget {
             height: 500,
             child: TimeSeriesChart(
               seriesList: startData,
-              viewport: DateTimeExtents(
-                start: startData.single.data.first.dateTime,
-                end: startData.single.data.last.dateTime,
-              ),
             ),
           );
         } else {

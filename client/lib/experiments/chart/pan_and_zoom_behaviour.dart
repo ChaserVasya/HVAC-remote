@@ -33,7 +33,7 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
     implements common.PanAndZoomBehavior<D> {
   CommonPanAndZoomBehavior({required this.refreshDataCallaback});
 
-  final void Function(List<TimeSeries>) refreshDataCallaback;
+  final void Function(List<TimeSeries>, DateTimeRange) refreshDataCallaback;
 
   @override
   String get role => 'PanAndZoom';
@@ -65,8 +65,8 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
       try {
         return super.onDragUpdate(localPosition, scale);
       } catch (e) {
-        //TODO fix: no ticket error (Bad state: No element)
-        if (e is StateError) return true; //! no ticket error
+        //TODO fix: no tick error (Bad state: No element)
+        if (e is StateError) return true; //! no tick error
         rethrow;
       }
     } else {
@@ -143,7 +143,7 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
 
     final newData = await _chart.refreshChartData(newDataRange);
 
-    refreshDataCallaback(newData);
+    refreshDataCallaback(newData, oldViewport);
     _chart.domainAxis!.setViewportSettings(
       _switchNewScalingFactor(stageChangeDir),
       _chart.domainAxis!.viewportTranslatePx,
@@ -222,7 +222,10 @@ class CommonPanAndZoomBehavior<D> extends common.PanBehavior<D>
       newTranslate = translate + actualDataShift * dataWidth;
     }
 
-    refreshDataCallaback(newData);
+    refreshDataCallaback(
+      newData,
+      (_chart.domainAxis!.scale as DateTimeScale).viewportDomain.toRange(),
+    );
     _chart.domainAxis!.setViewportSettings(scalingFactor, newTranslate);
     stopFlingAnimation();
   }
