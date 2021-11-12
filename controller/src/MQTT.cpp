@@ -5,6 +5,34 @@
 #include "config.hpp"
 //TODO GCP IoT JWT lib is not for production. Read about it in lib description. Change it.
 
+#if true //files
+const char *primary_ca = "-----BEGIN CERTIFICATE-----\n"
+                         "MIIBxTCCAWugAwIBAgINAfD3nVndblD3QnNxUDAKBggqhkjOPQQDAjBEMQswCQYD\n"
+                         "VQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzERMA8G\n"
+                         "A1UEAxMIR1RTIExUU1IwHhcNMTgxMTAxMDAwMDQyWhcNNDIxMTAxMDAwMDQyWjBE\n"
+                         "MQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExM\n"
+                         "QzERMA8GA1UEAxMIR1RTIExUU1IwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATN\n"
+                         "8YyO2u+yCQoZdwAkUNv5c3dokfULfrA6QJgFV2XMuENtQZIG5HUOS6jFn8f0ySlV\n"
+                         "eORCxqFyjDJyRn86d+Iko0IwQDAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUw\n"
+                         "AwEB/zAdBgNVHQ4EFgQUPv7/zFLrvzQ+PfNA0OQlsV+4u1IwCgYIKoZIzj0EAwID\n"
+                         "SAAwRQIhAPKuf/VtBHqGw3TUwUIq7TfaExp3bH7bjCBmVXJupT9FAiBr0SmCtsuk\n"
+                         "miGgpajjf/gFigGM34F9021bCWs1MbL0SA==\n"
+                         "-----END CERTIFICATE-----\n";
+
+const char *backup_ca = "-----BEGIN CERTIFICATE-----\n"
+                        "MIIB4TCCAYegAwIBAgIRKjikHJYKBN5CsiilC+g0mAIwCgYIKoZIzj0EAwIwUDEk\n"
+                        "MCIGA1UECxMbR2xvYmFsU2lnbiBFQ0MgUm9vdCBDQSAtIFI0MRMwEQYDVQQKEwpH\n"
+                        "bG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTEyMTExMzAwMDAwMFoX\n"
+                        "DTM4MDExOTAzMTQwN1owUDEkMCIGA1UECxMbR2xvYmFsU2lnbiBFQ0MgUm9vdCBD\n"
+                        "QSAtIFI0MRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWdu\n"
+                        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEuMZ5049sJQ6fLjkZHAOkrprlOQcJ\n"
+                        "FspjsbmG+IpXwVfOQvpzofdlQv8ewQCybnMO/8ch5RikqtlxP6jUuc6MHaNCMEAw\n"
+                        "DgYDVR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFFSwe61F\n"
+                        "uOJAf/sKbvu+M8k8o4TVMAoGCCqGSM49BAMCA0gAMEUCIQDckqGgE6bPA7DmxCGX\n"
+                        "kPoUVy0D7O48027KqGx2vKLeuwIgJ6iFJzWbVsaj8kfSt24bAgAXqmemFZHe+pTs\n"
+                        "ewv4n4Q=\n"
+                        "-----END CERTIFICATE-----\n";
+#else //openssl connect
 const char *primary_ca =
     "-----BEGIN CERTIFICATE-----\n"
     "MIIDDDCCArKgAwIBAgIUXIRd61ARosjr5tpYAQK1udlptnswCgYIKoZIzj0EAwIw\n"
@@ -45,6 +73,14 @@ const char *backup_ca =
     "DJOlalpsiwJR0VOeapY8/7aQAiEAiwRsSQXUmfVUW+N643GgvuMH70o2Agz8w67f\n"
     "SX+k+Lc=\n"
     "-----END CERTIFICATE-----\n";
+#endif
+
+const char *privc =
+    "-----BEGIN EC PRIVATE KEY-----\n"
+    "MHcCAQEEIBjVYlpJmz81qEJ/YIiIYlkeLshb349ZhNmcte754IikoAoGCCqGSM49\n"
+    "AwEHoUQDQgAE8CHzyYE+JvmpDAJt8aW2euC8ZT7EsaqS4emigerI5ZQolKgpx/EQ\n"
+    "Ze90BE5IecYPUa5GGc+nykvn/lCEl59CFg==\n"
+    "-----END EC PRIVATE KEY-----\n";
 
 void MQTT::connect()
 {
@@ -60,6 +96,7 @@ void MQTT::loop()
 
 void MQTT::setupCertsAndKey()
 {
+    // netClient->setInsecure();
 
     certs->append(primary_ca);
     certs->append(backup_ca);
@@ -67,8 +104,10 @@ void MQTT::setupCertsAndKey()
     // certs->append(gbackupCrtData, gbackupCrtSize);
     netClient->setTrustAnchors(certs);
 
-    const PrivateKey key(gprivateKeyData, gprivateKeySize);
+    netClient->setInsecure();
 
+    const PrivateKey key(gprivateKeyData, gprivateKeySize);
+    // const PrivateKey key(privc);
     device->setPrivateKey(key.getEC()->x);
 }
 
@@ -89,6 +128,7 @@ void MQTT::init()
     setupCertsAndKey();
 
     mqtt = new CloudIoTCoreMqtt(mqttClient, netClient, device);
+
     mqtt->setUseLts(true);
     mqtt->startMQTTAdvanced();
 
@@ -119,13 +159,23 @@ void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int
 
 String getJwt()
 {
+
+    char buf[256];
+    auto code = MQTT::netClient->getLastSSLError(buf, 256);
+    if (code != 0)
+    {
+        Serial.print("Last SSL ERROR was: ");
+        Serial.print(code);
+        Serial.print(" - ");
+        Serial.println(buf);
+    }
+
     // Disable software watchdog as these operations can take a while.
     ESP.wdtDisable();
     time_t iat = time(nullptr);
     Serial.println("Refreshing JWT");
-    Serial.println(iat);
-    String jwt = MQTT::device->createJWT(1636696991, jwt_exp_secs);
+    String jwt = MQTT::device->createJWT(1636722571, jwt_exp_secs);
+    Serial.println(jwt);
     ESP.wdtEnable(0);
-    Logger::info(jwt);
     return jwt;
 }

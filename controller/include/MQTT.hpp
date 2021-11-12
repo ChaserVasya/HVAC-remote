@@ -6,6 +6,7 @@
 
 class MQTT
 {
+public:
     static const char *mqtt_server;
     const static int port;
     const static char *topic;
@@ -19,7 +20,6 @@ class MQTT
     static void setupKey();
     static void setupCertsAndKey();
 
-public:
     static CloudIoTCoreDevice *device;
 
     static void init();
