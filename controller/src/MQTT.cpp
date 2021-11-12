@@ -5,7 +5,7 @@
 #include "config.hpp"
 //TODO GCP IoT JWT lib is not for production. Read about it in lib description. Change it.
 
-#if true //files
+#if false //files
 const char *primary_ca = "-----BEGIN CERTIFICATE-----\n"
                          "MIIBxTCCAWugAwIBAgINAfD3nVndblD3QnNxUDAKBggqhkjOPQQDAjBEMQswCQYD\n"
                          "VQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzERMA8G\n"
@@ -32,7 +32,7 @@ const char *backup_ca = "-----BEGIN CERTIFICATE-----\n"
                         "kPoUVy0D7O48027KqGx2vKLeuwIgJ6iFJzWbVsaj8kfSt24bAgAXqmemFZHe+pTs\n"
                         "ewv4n4Q=\n"
                         "-----END CERTIFICATE-----\n";
-#else //openssl connect
+#else     //openssl connect
 const char *primary_ca =
     "-----BEGIN CERTIFICATE-----\n"
     "MIIDDDCCArKgAwIBAgIUXIRd61ARosjr5tpYAQK1udlptnswCgYIKoZIzj0EAwIw\n"
