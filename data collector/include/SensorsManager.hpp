@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DataDto.hpp"
+#include "DataDTO.hpp"
 #include "LightSensor.hpp"
 #include "TemperatureSensor.hpp"
 #include "VoltageSensors.hpp"
@@ -12,8 +12,8 @@ class SensorsManager {
   static ESPBatteryVoltageSensor espBatteryVoltageSensor;
 
  public:
-  static DataDto poll() {
-    auto data = DataDto();
+  static DataDTO poll() {
+    auto data = DataDTO();
 
     data.illuminance = lightSensor.getValue();
     data.temperature = tempSensor.getValue();
@@ -26,7 +26,5 @@ class SensorsManager {
 
 TemperatureSensor SensorsManager::tempSensor = TemperatureSensor();
 LightSensor SensorsManager::lightSensor = LightSensor();
-UNOBatteryVoltageSensor SensorsManager::unoBatteryVoltageSensor =
-    UNOBatteryVoltageSensor();
-ESPBatteryVoltageSensor SensorsManager::espBatteryVoltageSensor =
-    ESPBatteryVoltageSensor();
+UNOBatteryVoltageSensor SensorsManager::unoBatteryVoltageSensor = UNOBatteryVoltageSensor();
+ESPBatteryVoltageSensor SensorsManager::espBatteryVoltageSensor = ESPBatteryVoltageSensor();

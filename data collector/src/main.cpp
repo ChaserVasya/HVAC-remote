@@ -1,10 +1,10 @@
 #include <Arduino.h>
 
 #include "Bridge.hpp"
-#include "DataJson.hpp"
 #include "DataUtils.hpp"
 #include "ExceptionHandler.hpp"
 #include "Exceptions.hpp"
+#include "Json.hpp"
 #include "Logger.hpp"
 #include "SensorsManager.hpp"
 
@@ -14,9 +14,7 @@ void setup() {
   Logger::setup();
   Logger::debugln(F(D MS "UNO SETUPING"));
 
-  const auto exc = Bridge::setup();
-
-  if (exc) ExceptionHandler::handle(exc);
+  Bridge::setup();
 
   Logger::debugln(F(D MS "UNO IS SETUPED"));
 };
@@ -24,14 +22,10 @@ void setup() {
 void loop() {
   delay(5000);
 
-  BridgeException exc;
-
-  if (Bridge::isSetuped()) {
+  try {
     const auto data = SensorsManager::poll();
-    const auto json = DataJson::serialize(data);
-    exc = Bridge::send(json);
-  } else {
-    exc = Bridge::setup();
+    Bridge::send(data);
+  } catch (const Exception& e) {
+    ExceptionHandler::handle(e);
   }
-  if (exc) ExceptionHandler::handle(exc);
 }

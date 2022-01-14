@@ -2,17 +2,17 @@
 
 #include <Arduino.h>
 
-#include "DataDto.hpp"
+#include "DataDTO.hpp"
 #include "Logger.hpp"
 
 class DataUtils {
  public:
-  static void print(const DataDto& data) {
+  static void print(const DataDTO& data) {
     Logger::println(F("=========="));
 
     Logger::print(F("Temp: "));
     Logger::print(data.temperature);
-    Logger::println(F(" C"));
+    Logger::println(F(" Cm"));
 
     Logger::print(F("Illuminance: "));
     Logger::print(data.illuminance);

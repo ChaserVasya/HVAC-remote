@@ -3,6 +3,7 @@
 #include <SoftwareSerial.h>
 
 #include "Exceptions.hpp"
+#include <list>
 
 class Bridge {
  private:

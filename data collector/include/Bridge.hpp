@@ -2,7 +2,20 @@
 
 #include <SoftwareSerial.h>
 
-#include "Exceptions.hpp"
+class IDManager {
+  static const ID startID;  // 0 is reserved
+  static ID id;
+
+  static void checkForOverflowing() {
+    if (id < startID) id = startID;
+  }
+
+ public:
+  static ID generate() {
+    checkForOverflowing();
+    return id++;
+  }
+};
 
 class Bridge {
  private:
@@ -17,19 +30,21 @@ class Bridge {
   static const String handshakeWord;
   static const String receivedWorld;
 
-  static bool _isSetuped;
-
-  static BridgeException timedReadString(String& buf);
+  static void timedReadString(String& buf);
 
   static void waitInputEnd();
   static void flushBuffers();
-  static BridgeException waitForResponce(int timeout = responceTimeout);
-  static BridgeException handshake();
-  static BridgeException checkResponceKeyword(const String& rightKeyword);
+  static void waitForResponce(int timeout = responceTimeout);
+  static void handshake();
+  static void checkResponceKeyword(const String& rightKeyword);
 
  public:
-  static bool isSetuped();
-  static BridgeException setup();
-  static BridgeException send(const String& str);
+  static void setup();
+
+  template <typename DTO>
+  static void send(const DTO& dto);
+
   static String read();
+
+  static void loop();
 };

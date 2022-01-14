@@ -1,6 +1,6 @@
 #pragma once
 
-struct DataDto {
+struct DataDTO {
   double temperature;
   double illuminance;
   double UNOBatteryVoltage;
