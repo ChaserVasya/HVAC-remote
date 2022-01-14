@@ -1,0 +1,8 @@
+{
+    "C_Cpp.clang_format_fallbackStyle":"{ BasedOnStyle: Google, ColumnLimit: 120}",
+    "[cpp]": {
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true,
+        "editor.formatOnSave": true,
+    }
+}

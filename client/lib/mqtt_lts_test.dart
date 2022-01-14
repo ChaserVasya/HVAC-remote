@@ -152,10 +152,10 @@ class _GoogleMqttConfiguration {
 
     Future<void> _init() async {
       key = JsonWebKey.fromPem(await rootBundle.loadString('assets/sensitive/private.pem'));
-      securityContext.setTrustedCertificatesBytes(
-          utf8.encode(await rootBundle.loadString('assets/sensitive/primary.pem')));
-      securityContext.setTrustedCertificatesBytes(
-          utf8.encode(await rootBundle.loadString('assets/sensitive/backup.pem')));
+      // securityContext.setTrustedCertificatesBytes(
+      //     utf8.encode(await rootBundle.loadString('assets/sensitive/primary.pem')));
+      // securityContext.setTrustedCertificatesBytes(
+      //     utf8.encode(await rootBundle.loadString('assets/sensitive/backup.pem')));
 
       // securityContext.setTrustedCertificates('assets/sensitive/primary.pem');
       // securityContext.setTrustedCertificates('assets/sensitive/backup.pem');
