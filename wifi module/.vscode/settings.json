@@ -1,7 +1,9 @@
 {
     "C_Cpp.experimentalFeatures": "Enabled",
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, ColumnLimit: 120}",
+    "editor.suggest.insertMode": "replace",
+    "editor.semanticHighlighting.enabled": true,
     "editor.formatOnSave": true,
-    "editor.formatOnType": true,
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",

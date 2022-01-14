@@ -43,6 +43,10 @@ dependencies:
   charts_flutter: ^0.11.0
   charts_common: ^0.11.0
 
+  #mqtt
+  mqtt_client: ^9.0.0
+  jose: ^0.3.0
+
 
 dev_dependencies:
   test: 
@@ -72,6 +76,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/sensitive/primary.pem
+    - assets/sensitive/backup.pem
+    - assets/sensitive/private.pem
 
 
   #   - images/a_dot_burr.jpeg
