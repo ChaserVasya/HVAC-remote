@@ -15,6 +15,8 @@ void MQTT::connect() { mqtt->mqttConnect(false); }  //! if true first attempt wi
 
 void MQTT::loop() { mqtt->loop(); }
 
+void MQTT::send(String serialized) { mqtt->publishTelemetry(serialized); }
+
 void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length) {
   if (length > 0)
     Serial.printf("incoming,0x%s - %s\n", topic, bytes);

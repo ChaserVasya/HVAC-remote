@@ -1,9 +1,9 @@
 #pragma once
 
-#include "incbin.h"
+// #include "incbin.h"
 
-INCBIN_EXTERN(primaryCrt);
-INCBIN_EXTERN(backupCrt);
-INCBIN_EXTERN(privateKey);
+// INCBIN_EXTERN(primaryCrt);
+// INCBIN_EXTERN(backupCrt);
+// // INCBIN_EXTERN(privateKey);
 
 extern const char* const privateKey;

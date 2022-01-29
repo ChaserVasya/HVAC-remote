@@ -7,7 +7,7 @@ class VoltageDivider {
   double _Vin;
   double _Vout;
 
-  // Main rule:  Vout = Vin/(1 + Rupper/Rlower)
+  // Main rule:  Vout = Vin/(1 + Rupper/(Rlower + Roffset))
  public:
   double Rlower() { return _Rupper / (_Vin / _Vout - 1) - _Roffset; };
   double Rupper() { return (_Rlower + _Roffset) * (_Vin / _Vout - 1); };

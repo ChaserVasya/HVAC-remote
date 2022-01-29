@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
-
 #include "../AnalogSensor.hpp"
 #include "../VoltageDivider.hpp"
 
@@ -13,7 +11,8 @@ class LightSensor : public AnalogSensor {
   double voltage2Value(const double voltage) override {
     divider.Vout(voltage);
     const auto Rphotoresistor = divider.Rlower();
-    return 5000000 / Rphotoresistor;
+
+    return 10000000 / Rphotoresistor;
   };
 
  public:
