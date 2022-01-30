@@ -2,9 +2,10 @@
 
 export class UserDetails {
   constructor(
-      {createdOn,
-        role,
-      }: {
+    {
+      createdOn,
+      role,
+    }: {
       createdOn: number,
       role: Role,
     }

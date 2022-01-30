@@ -2,7 +2,7 @@
 
 /* eslint max-len: ["error", { "code": 120 }]*/
 
-import admin = require("firebase-admin")
+import admin from "firebase-admin";
 admin.initializeApp();
 
 export {changeRole} from "./functions/auth/change-role";

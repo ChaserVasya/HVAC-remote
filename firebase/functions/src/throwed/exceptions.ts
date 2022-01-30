@@ -6,13 +6,22 @@ export class Exception extends HttpsError {
   }
 }
 
-
 export class UnauthorizedAccess extends Exception {
   constructor() {
     super(
-        "unauthenticated",
-        "Unauthorized access to functions. Current user circumvented signing " +
+      "unauthenticated",
+      "Unauthorized access to functions. Current user circumvented signing " +
       "or it is a development error."
     );
   }
 }
+
+export class InvalidControllerData extends Exception {
+  constructor(wrongDataPayload: string) {
+    super(
+      "invalid-argument",
+      `Controller sent invalid data: "${wrongDataPayload}"`,
+    );
+  }
+}
+

@@ -1,35 +1,34 @@
-
 import {https, logger} from "firebase-functions";
-import admin = require("firebase-admin")
+import admin from "firebase-admin";
 import {Role} from "../../entities/user";
 import {RoleClaimNotExist} from "../../throwed/errors";
 import {UnauthorizedAccess} from "../../throwed/exceptions";
 
 
 export const changeRole = https.onCall(
-    async (password, context) => {
-      if (!context.auth) throw new UnauthorizedAccess();
+  async (password, context) => {
+    if (!context.auth) throw new UnauthorizedAccess();
 
-      const newRole = await getRoleWithSamePassword(password);
-      const uid = context.auth.uid;
+    const newRole = await getRoleWithSamePassword(password);
+    const uid = context.auth.uid;
 
-      if (newRole) {
-        await updateUserDoc(uid, newRole);
-        await refreshClaimsWithNewRole(uid, newRole);
-        logSuccess(uid, newRole);
-        return true;
-      } else {
-        warnAboutUnsuccess(uid);
-        return false;
-      }
-    },
+    if (newRole) {
+      await updateUserDoc(uid, newRole);
+      await refreshClaimsWithNewRole(uid, newRole);
+      logSuccess(uid, newRole);
+      return true;
+    } else {
+      warnUnsuccess(uid);
+      return false;
+    }
+  },
 );
 
 async function getRoleWithSamePassword(password: string): Promise<Role | null> {
   const rolesDocList = await admin
-      .firestore()
-      .collection("roles")
-      .listDocuments();
+    .firestore()
+    .collection("roles")
+    .listDocuments();
 
 
   for (const roleDocRef of rolesDocList) {
@@ -51,7 +50,7 @@ async function updateUserDoc(uid: string, newRole: string) {
   await admin.firestore().collection("users").doc(uid).update("role", newRole);
 }
 
-function warnAboutUnsuccess(uid: string) {
+function warnUnsuccess(uid: string) {
   logger.warn({
     "uid": uid,
     "message": "unsuccessful attempt to change roles",
