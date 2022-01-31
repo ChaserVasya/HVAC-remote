@@ -1,7 +1,7 @@
 import {auth} from "firebase-functions";
 import admin from "firebase-admin";
-import {UserDetails} from "../../entities/user";
-import {DEFAULT_ROLE} from "../../constants";
+import {UserDetails} from "../../entities/user.js";
+import {DEFAULT_ROLE} from "../../constants.js";
 
 
 export const createUserDoc = auth.user().onCreate(

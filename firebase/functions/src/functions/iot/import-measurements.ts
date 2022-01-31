@@ -1,14 +1,14 @@
 import admin from "firebase-admin";
 import {pubsub} from "firebase-functions";
-import {Data} from "../../entities/data";
-import {InvalidControllerData} from "../../throwed/exceptions";
+import {Data} from "../../entities/data.js";
+import {InvalidControllerData} from "../../throwed/exceptions.js";
 
 
 export const importMeasurements = pubsub
-  .topic("projects/snappy-provider-295713/topics/measurements")
+  .topic("measurements")
   .onPublish(onPublish);
 
-function onPublish(message: pubsub.Message) {
+async function onPublish(message: pubsub.Message) {
   const json = message.json();
 
   if (!isData(json)) throw new InvalidControllerData(message.data);
@@ -20,7 +20,7 @@ function onPublish(message: pubsub.Message) {
     "batteryVoltage": json.batteryVoltage,
   };
 
-  admin
+  await admin
     .firestore()
     .collection("measurements")
     .doc(docID)

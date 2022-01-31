@@ -1,13 +1,13 @@
 import admin from "firebase-admin";
 import {pubsub} from "firebase-functions";
-import {ControllerException} from "../../entities/controller-exception";
-import {InvalidControllerData} from "../../throwed/exceptions";
+import {ControllerException} from "../../entities/controller-exception.js";
+import {InvalidControllerData} from "../../throwed/exceptions.js";
 
 export const importExceptions = pubsub
-  .topic("projects/snappy-provider-295713/topics/exceptions")
+  .topic("exceptions")
   .onPublish(onPublish);
 
-function onPublish(message: pubsub.Message) {
+async function onPublish(message: pubsub.Message) {
   const json = message.json();
 
   if (!isControllerException(json)) throw new InvalidControllerData(message.data);
@@ -18,7 +18,7 @@ function onPublish(message: pubsub.Message) {
     "object": json.object,
   };
 
-  admin
+  await admin
     .firestore()
     .collection("exceptions")
     .doc(docID.toString())

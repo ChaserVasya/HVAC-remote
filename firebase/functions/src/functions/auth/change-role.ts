@@ -1,9 +1,8 @@
 import {https, logger} from "firebase-functions";
 import admin from "firebase-admin";
-import {Role} from "../../entities/user";
-import {RoleClaimNotExist} from "../../throwed/errors";
-import {UnauthorizedAccess} from "../../throwed/exceptions";
-
+import {Role} from "../../entities/user.js";
+import {RoleClaimNotExist} from "../../throwed/errors.js";
+import {UnauthorizedAccess} from "../../throwed/exceptions.js";
 
 export const changeRole = https.onCall(
   async (password, context) => {
