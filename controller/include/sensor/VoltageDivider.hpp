@@ -1,5 +1,9 @@
 #pragma once
 
+// convenient representation of voltage divier.
+// user fulls known fields by method(double) and takes
+// missing value by method().
+// Examples are in [AnalogSensor]s implementations
 class VoltageDivider {
   double _Rlower;
   double _Rupper;

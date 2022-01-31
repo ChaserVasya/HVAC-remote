@@ -11,12 +11,7 @@
 class Sleep {
   static constexpr uint16_t sleepSec = 15 * 60;
 
- public:
-  static void sleep() {
-    constexpr uint32_t sec2usFactor = 1000000;
-
-    Logger::debugln(F("Sleep: sleep"));
-
+  static void prepareForSleep() {
     esp_bluedroid_disable();
     esp_bluedroid_deinit();
     esp_bt_controller_disable();
@@ -25,6 +20,15 @@ class Sleep {
     esp_wifi_deinit();
     Serial.flush();
     Serial.end();
+  }
+
+ public:
+  static void sleep() {
+    constexpr uint32_t sec2usFactor = 1000000;
+
+    Logger::debugln(F("Sleep: sleep"));
+
+    prepareForSleep();
 
     esp_deep_sleep(sleepSec * sec2usFactor);
   }

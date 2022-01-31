@@ -9,10 +9,12 @@ class LightSensor : public AnalogSensor {
   uint8_t pin() override { return 33; };
 
   double voltage2Value(const double voltage) override {
+    uint32_t empiricalSelectedFactor = 10000000;
+
     divider.Vout(voltage);
     const auto Rphotoresistor = divider.Rlower();
 
-    return 10000000 / Rphotoresistor;
+    return empiricalSelectedFactor / Rphotoresistor;
   };
 
  public:

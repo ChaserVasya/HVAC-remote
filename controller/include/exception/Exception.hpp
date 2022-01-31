@@ -7,7 +7,7 @@ class Exception {
  public:
   int code;
   String description;
-  virtual String object() const = 0;
+  virtual String object() const = 0;  // thrower
 
   Exception(int code, String description) : code(code), description(description) {}
 
