@@ -1,6 +1,7 @@
-
-
 export class UserDetails {
+  role: Role;
+  createdOn: number;
+
   constructor(
     {
       createdOn,
@@ -13,9 +14,6 @@ export class UserDetails {
     this.createdOn = createdOn;
     this.role = role;
   }
-
-  role: Role;
-  createdOn: number;
 }
 
 export declare type Role = "reader" | "adjuster" | "manufacter";

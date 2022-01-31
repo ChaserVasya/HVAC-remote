@@ -3,7 +3,12 @@ import {pubsub} from "firebase-functions";
 import {Data} from "../../entities/data";
 import {InvalidControllerData} from "../../throwed/exceptions";
 
-export const helloPubSub = pubsub.topic("topic-name").onPublish((message) => {
+
+export const importMeasurements = pubsub
+  .topic("projects/snappy-provider-295713/topics/measurements")
+  .onPublish(onPublish);
+
+function onPublish(message: pubsub.Message) {
   const json = message.json();
 
   if (!isData(json)) throw new InvalidControllerData(message.data);
@@ -20,7 +25,7 @@ export const helloPubSub = pubsub.topic("topic-name").onPublish((message) => {
     .collection("measurements")
     .doc(docID)
     .set(values);
-});
+}
 
 function isData(data: unknown): data is Data {
   const maybeData = data as Data;
