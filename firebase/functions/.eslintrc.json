@@ -44,6 +44,6 @@
     "require-jsdoc": 0,
     "max-len": 0,
     "no-unreachable": 0,
-    "import/no-unresolved": 0
+    "import/no-unresolved": 0 //! to end imports with ".js". Without it deploying fails
   }
 }

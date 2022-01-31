@@ -9,7 +9,7 @@ export const importMeasurements = pubsub
   .onPublish(onPublish);
 
 async function onPublish(message: pubsub.Message) {
-  const json = message.json();
+  const json = message.json;
 
   if (!isData(json)) throw new InvalidControllerData(message.data);
 

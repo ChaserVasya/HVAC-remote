@@ -8,7 +8,7 @@ export const importExceptions = pubsub
   .onPublish(onPublish);
 
 async function onPublish(message: pubsub.Message) {
-  const json = message.json();
+  const json = message.json;
 
   if (!isControllerException(json)) throw new InvalidControllerData(message.data);
 

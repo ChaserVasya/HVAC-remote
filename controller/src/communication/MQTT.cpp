@@ -12,8 +12,8 @@ void MQTT::connect() { mqtt->mqttConnect(false); }  //! if true first attempt wi
 
 void MQTT::loop() { mqtt->loop(); }
 
-void MQTT::send(String serialized) { mqtt->publishTelemetry(serialized, 0); }
-void MQTT::send(String subtopic, String serialized) { mqtt->publishTelemetry(subtopic, serialized, 0); }
+void MQTT::send(String serialized) { mqtt->publishTelemetry(serialized, 1); }
+void MQTT::send(String subtopic, String serialized) { mqtt->publishTelemetry(subtopic, serialized, 1); }
 
 void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length) {
   if (length > 0)

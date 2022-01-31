@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
+#include <esp_bt.h>
+#include <esp_bt_main.h>
 #include <esp_sleep.h>
 #include <esp_wifi.h>
 
@@ -13,13 +15,16 @@ class Sleep {
   static void sleep() {
     constexpr uint32_t sec2usFactor = 1000000;
 
-    Logger::debugln(F("Sleep: Preparing"));
+    Logger::debugln(F("Sleep: sleep"));
 
+    esp_bluedroid_disable();
+    esp_bluedroid_deinit();
+    esp_bt_controller_disable();
+    esp_bt_controller_deinit();
     esp_wifi_stop();
     esp_wifi_deinit();
     Serial.flush();
-
-    Logger::debugln(F("Sleep: sleep"));
+    Serial.end();
 
     esp_deep_sleep(sleepSec * sec2usFactor);
   }
