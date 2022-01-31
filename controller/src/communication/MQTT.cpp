@@ -1,21 +1,19 @@
-
-
 #include "communication/MQTT.hpp"
 
 #include "common/Logger.hpp"
-#include "communication/sensitive.hpp"
 
+//!  CloudIoTCoreMqtt.cpp is maunally updated for time saving. Refactor
+
+extern const char *const privateKey;
 extern const uint8_t primaryCert[] asm("_binary_src_communication_sensitive_primary_cer_start");
 extern const uint8_t backupCert[] asm("_binary_src_communication_sensitive_backup_cer_start");
-
-// TODO GCP IoT JWT lib is not for production. Read about it in lib description.
-// Change it.
 
 void MQTT::connect() { mqtt->mqttConnect(false); }  //! if true first attempt will fail
 
 void MQTT::loop() { mqtt->loop(); }
 
-void MQTT::send(String serialized) { mqtt->publishTelemetry(serialized); }
+void MQTT::send(String serialized) { mqtt->publishTelemetry(serialized, 0); }
+void MQTT::send(String subtopic, String serialized) { mqtt->publishTelemetry(subtopic, serialized, 0); }
 
 void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length) {
   if (length > 0)
@@ -55,9 +53,10 @@ void MQTT::setup() {
 }
 
 void MQTT::setupSecurity() {
-  String certs;
+  static String certs;
   certs += (const char *)primaryCert;
   certs += (const char *)backupCert;
   netClient->setCACert(certs.c_str());
+
   device->setPrivateKey(privateKey);
 }

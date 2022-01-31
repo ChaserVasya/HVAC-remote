@@ -19,6 +19,7 @@ class Wifi {
 
     for (const auto conf : wifiConfigs) {
       Logger::debugln(String("WiFi: Connecting to ") + StringUtils::addQuotas(conf.ssid));
+
       const auto start = millis();
       WiFi.begin(conf.ssid, conf.password);
       while (millis() - start < connectionTimeout) {

@@ -1,39 +1,55 @@
 #include <Arduino.h>
 
-#include "common/DataUtils.hpp"
+#include "common/Sleep.hpp"
 #include "common/Time.hpp"
 #include "communication/Json.hpp"
 #include "communication/MQTT.hpp"
 #include "communication/WiFi/Wifi.hpp"
 #include "sensor/SensorsManager.hpp"
 
-void setup() {
-  Logger::setup();
+void pollDataAndSend() {
   SensorsManager::setup();
-  Wifi::setup();
-  Time::sync();
-  MQTT::setup();
-  MQTT::connect();
-}
-
-void loop() {
-  if (!Wifi ::isConnected()) {
-    try {
-      Wifi::setup();
-    } catch (const Exception& e) {
-      return delay(1000);
-    }
-  }
 
   auto data = SensorsManager::poll();
-  DataUtils::print(data);
-
-  data.time = time(nullptr);
+  data.time = Time::time();
 
   auto serialized = Json::serialize(data);
-  Logger::debugln(serialized);
-
   MQTT::send(serialized);
 
-  delay(10000);
+  Logger::debugln(String("Sended data: ") + serialized);
 }
+
+void sendResetReasonIfUnexpected() {
+  auto reason = esp_reset_reason();
+
+  if (reason == ESP_RST_DEEPSLEEP || reason == ESP_RST_POWERON) return;
+
+  auto exc = ResetException(reason);
+  auto serialized = Json::serialize(exc);
+  MQTT::send("/exceptions", serialized);
+
+  Logger::debugln(serialized);
+}
+
+void tryConnectWithWorld() {
+  try {
+    Wifi::setup();
+    Time::sync();
+    MQTT::setup();
+    MQTT::connect();
+  } catch (...) {
+    Sleep::sleep();
+  }
+}
+
+void setup() {
+  Logger::setup();
+
+  tryConnectWithWorld();
+  sendResetReasonIfUnexpected();
+  pollDataAndSend();
+
+  Sleep::sleep();
+}
+
+void loop() {}

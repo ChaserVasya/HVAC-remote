@@ -5,24 +5,25 @@
 
 class Exception {
  public:
-  int errorCode;
+  int code;
   String description;
+  virtual String object() const = 0;
 
-  Exception(int errorCode, String description) : errorCode(errorCode), description(description) {}
+  Exception(int code, String description) : code(code), description(description) {}
 
-  explicit operator bool() const { return errorCode; }
+  // For exception check like "if (exc){...}"
+  explicit operator bool() const { return code; }
 
   String toString() const {
     String buf;
     buf += "Exception: ";
-    buf += obj() + ": ";
-    buf += "Error code: " + code2String(errorCode) + "; ";
-    if (description.length()) buf += "Description: " + description;
+    buf += object() + ": ";
+    buf += "Error code: " + code2String(code) + "; ";
+    if (description.isEmpty()) buf += "Description: " + description;
 
     return buf;
   }
 
  protected:
   virtual String code2String(int code) const = 0;
-  virtual String obj() const = 0;
 };

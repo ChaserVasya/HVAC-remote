@@ -13,13 +13,11 @@ JsonDoc Json::createDoc(const DataDTO& str) {
 }
 
 template <>
-DataDTO Json::createStruct<DataDTO>(const JsonDoc& doc) {
-  DataDTO dto;
+JsonDoc Json::createDoc(const ResetException& exc) {
+  JsonDoc doc;
 
-  dto.illuminance = doc[F("illuminance")];
-  dto.temperature = doc[F("temperature")];
-  dto.batteryVoltage = doc[F("batteryVoltage")];
-  dto.time = doc[F("time")];
+  doc[F("code")] = exc.code;
+  doc[F("object")] = exc.object();
 
-  return dto;
-};
+  return doc;
+}
