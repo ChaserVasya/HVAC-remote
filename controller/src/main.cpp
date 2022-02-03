@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+#include "common/DataUtils.hpp"
 #include "common/Sleep.hpp"
 #include "common/Time.hpp"
 #include "communication/Json.hpp"
@@ -7,10 +8,12 @@
 #include "communication/WiFi/Wifi.hpp"
 #include "sensor/SensorsManager.hpp"
 
-void pollDataAndSend() {
+DataDTO pollData() {
   SensorsManager::setup();
+  return SensorsManager::poll();
+}
 
-  auto data = SensorsManager::poll();
+void send(DataDTO data) {
   data.time = Time::time();
 
   auto serialized = Json::serialize(data);
@@ -45,9 +48,12 @@ void tryConnectWithWorld() {
 void setup() {
   Logger::setup();
 
+  // TODO Wifi somehow affects on polling. Check how
+  auto data = pollData();
+
   tryConnectWithWorld();
   sendResetReasonIfUnexpected();
-  pollDataAndSend();
+  send(data);
 
   Sleep::sleep();
 }

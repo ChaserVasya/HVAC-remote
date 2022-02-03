@@ -9,7 +9,7 @@
 #include "exception/Exceptions.hpp"
 
 class Wifi {
-  constexpr static unsigned long connectionTimeout = 5000;
+  constexpr static unsigned long connectionTimeout = 10000;
 
  public:
   static bool isConnected() { return WiFi.isConnected(); }
@@ -24,7 +24,7 @@ class Wifi {
       WiFi.begin(conf.ssid, conf.password);
       while (millis() - start < connectionTimeout) {
         if (WiFi.isConnected()) return;
-        delay(1);
+        delay(10);
       }
       WiFi.disconnect();
     }

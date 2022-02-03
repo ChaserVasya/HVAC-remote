@@ -16,11 +16,11 @@ syms Rlower Vout
 Rupper = 46000;
 Vin = 3.3;
 
-Divider = Vin*Rlower/(Rlower + Rupper) == Vout;
+Divider = Vin/(1 + Rupper/Rlower) == Vout;
 
 %% main
 
-RRange = [ 10^4  2*10^5 ];
+RRange = [ 10^4  4*10^5 ];
 RSet = linspace(RRange(1),RRange(2));
 TSet = SteinhartHart_TfromR(RSet);
 
@@ -33,6 +33,7 @@ end
 
 figure('Name',"V divider range");
 semilogx(RSet,VoutSet);
+hold all;
 
 figure('Name',"T from R");
 semilogx(RSet,convtemp(TSet,'K','C'));

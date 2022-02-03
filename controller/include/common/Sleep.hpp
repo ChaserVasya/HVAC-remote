@@ -9,7 +9,7 @@
 #include "Logger.hpp"
 
 class Sleep {
-  static constexpr uint16_t sleepSec = 15 * 60;
+  static constexpr uint16_t sleepSec = 5 * 60;
 
   static void prepareForSleep() {
     esp_bluedroid_disable();

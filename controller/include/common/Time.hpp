@@ -18,7 +18,7 @@ class Time {
     configTzTime(tz, ntp_server1, ntp_server2, ntp_server3);
 
     while (::time(nullptr) < programUploadTime) delay(500);
-  }
+  };
 
   static time_t time() { return ::time(nullptr); }
 };

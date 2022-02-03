@@ -11,11 +11,16 @@ struct WiFiConfig {
 
 const std::vector<WiFiConfig> wifiConfigs = {
     WiFiConfig({
-        "mamaaa, just killed a maaan",
-        "hehehehe",
+        "RT-WiFi_5FE0",
+        "Z2uQ6HHC",
     }),
     WiFiConfig({
         "TP-Link_2102",
         "58098257",
     }),
+    WiFiConfig({
+        "mamaaa, just killed a maaan",
+        "hehehehe",
+    }),
+
 };

@@ -27,9 +27,9 @@ class TemperatureSensor : public AnalogSensor {
   // Steinhart-Hart - main thermistor dependency T(R)
   // coefs defined by my own methods
   double SteinhartHart_toT(const double R) {
-    constexpr auto a = 0.0024;
-    constexpr auto b = -4.473e-05;
-    constexpr auto c = 1.1353e-06;
+    constexpr auto a = -6.46e-4;
+    constexpr auto b = 4.155e-4;
+    constexpr auto c = -3.9e-7;
 
     const auto lnR = log(R);
     const auto T = 1 / (a + (b * lnR) + (c * pow(lnR, 3)));
