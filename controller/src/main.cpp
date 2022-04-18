@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "common/DataUtils.hpp"
+#include "common/Led.hpp"
 #include "common/Sleep.hpp"
 #include "common/Time.hpp"
 #include "communication/Json.hpp"
@@ -46,6 +47,7 @@ void tryConnectWithWorld() {
 }
 
 void setup() {
+  Led::powerOn();
   Logger::setup();
 
   // TODO Wifi somehow affects on polling. Check how
@@ -55,6 +57,7 @@ void setup() {
   sendResetReasonIfUnexpected();
   send(data);
 
+  Led::powerOff();
   Sleep::sleep();
 }
 

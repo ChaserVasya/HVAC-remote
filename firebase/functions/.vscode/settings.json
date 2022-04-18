@@ -1,10 +1,15 @@
 {
-  "editor.formatOnSave": true,
-  "[typescript]": {
-    "editor.codeActionsOnSave": {
-      "source.fixAll": true,
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "off",
+    "editor.insertSpaces": true,
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+    "[typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+        },
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.tabSize": 2,
     },
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.tabSize": 2,
-  },
 }

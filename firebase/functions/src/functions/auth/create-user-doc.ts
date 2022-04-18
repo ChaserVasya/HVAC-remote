@@ -14,4 +14,3 @@ export const createUserDoc = auth.user().onCreate(
       .create(JSON.parse(JSON.stringify(userDetails)));
   },
 );
-
