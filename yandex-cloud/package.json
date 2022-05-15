@@ -1,0 +1,23 @@
+{
+  "name": "yandex-cloud",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --fix --ext .js,.ts .",
+    "build": "tsc --build",
+    "all": "npm run lint && npm run build && node build/index-local.js"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.33",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "@yandex-cloud/nodejs-sdk": "^2.1.0",
+    "eslint-plugin-import": "latest",
+    "typescript": "^4.6.4",
+    "dotenv": "^16.0.0"
+  },
+  "dependencies": {
+    "ydb-sdk": "^3.0.0"
+  }
+}
