@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "eslint --fix --ext .js,.ts .",
     "build": "tsc --build",
+    "import": "npm run build && node build/import.js",
     "all": "npm run lint && npm run build && node build/index-local.js"
   },
   "devDependencies": {

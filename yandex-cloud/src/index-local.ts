@@ -1,5 +1,3 @@
-// это файл для тестирования с локального компьютера
-// запускайте его для проверки и тестирования своего кода перед развертыванием функции
 import { Data } from "./data";
 import { driver, initDb } from "./database";
 import { insertValue } from "./queries/clients-table";
