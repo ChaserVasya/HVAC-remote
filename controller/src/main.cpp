@@ -5,9 +5,11 @@
 #include "common/Sleep.hpp"
 #include "common/Time.hpp"
 #include "communication/Json.hpp"
-#include "communication/MQTT.hpp"
 #include "communication/WiFi/Wifi.hpp"
+#include "injection.hpp"
 #include "sensor/SensorsManager.hpp"
+
+/// HELPERS
 
 DataDTO pollData() {
   SensorsManager::setup();
@@ -18,7 +20,7 @@ void send(DataDTO data) {
   data.time = Time::time();
 
   auto serialized = Json::serialize(data);
-  MQTT::send(serialized);
+  mqtt->send(serialized);
 
   Logger::debugln(String("Sended data: ") + serialized);
 }
@@ -30,7 +32,7 @@ void sendResetReasonIfUnexpected() {
 
   auto exc = ResetException(reason);
   auto serialized = Json::serialize(exc);
-  MQTT::send("/exceptions", serialized);
+  mqtt->send("/exceptions", serialized);
 
   Logger::debugln(serialized);
 }
@@ -39,12 +41,14 @@ void tryConnectWithWorld() {
   try {
     Wifi::setup();
     Time::sync();
-    MQTT::setup();
-    MQTT::connect();
+    mqtt->setup();
+    mqtt->connect();
   } catch (...) {
     Sleep::sleep();
   }
 }
+
+/// MAIN FUNCTIONS
 
 void setup() {
   Led::powerOn();

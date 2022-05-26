@@ -1,19 +1,16 @@
-#include "communication/MQTT.hpp"
+#include "communication/MQTT/Google.hpp"
 
 #include "common/Logger.hpp"
 
-//!  CloudIoTCoreMqtt.cpp is maunally updated for time saving. Refactor
-
 extern const char *const privateKey;
-extern const uint8_t primaryCert[] asm("_binary_src_communication_sensitive_primary_cer_start");
-extern const uint8_t backupCert[] asm("_binary_src_communication_sensitive_backup_cer_start");
+extern const uint8_t primaryCert[] asm("_binary_src_communication_sensitive_google_primary_cer_start");
+extern const uint8_t backupCert[] asm("_binary_src_communication_sensitive_google_backup_cer_start");
 
-void MQTT::connect() { mqtt->mqttConnect(false); }  //! if true first attempt will fail
+void MQTT::connect() { mqtt->mqttConnect(false); }
 
 void MQTT::loop() { mqtt->loop(); }
 
 void MQTT::send(String serialized) { mqtt->publishTelemetry(serialized, 1); }
-void MQTT::send(String subtopic, String serialized) { mqtt->publishTelemetry(subtopic, serialized, 1); }
 
 void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length) {
   if (length > 0)

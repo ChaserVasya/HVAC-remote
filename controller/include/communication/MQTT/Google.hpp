@@ -39,7 +39,6 @@ class MQTT {
   static void loop();
 
   static void send(String serialized);
-  static void send(String subtopic, String serialized);
 };
 
 const int jwt_exp_secs = 3600 * 20;

@@ -85,3 +85,20 @@ class ResetException : public Exception {
     }
   }
 };
+
+class MQTTException : public Exception {
+ public:
+  MQTTException(int code = 0) : Exception(code, "") {}
+
+  String object() const override { return "MQTT"; }
+
+ protected:
+  String code2String(int code) const override {
+    switch (code) {
+      case 0:
+        return "Ok";
+      case 1:
+        return "Not connected to broker";
+    }
+  }
+};
