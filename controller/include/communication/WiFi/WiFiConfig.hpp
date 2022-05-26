@@ -11,10 +11,6 @@ struct WiFiConfig {
 
 const std::vector<WiFiConfig> wifiConfigs = {
     WiFiConfig({
-        "RT-WiFi_5FE0",
-        "Z2uQ6HHC",
-    }),
-    WiFiConfig({
         "TP-Link_2102",
         "58098257",
     }),
@@ -22,5 +18,8 @@ const std::vector<WiFiConfig> wifiConfigs = {
         "mamaaa, just killed a maaan",
         "hehehehe",
     }),
-
+    WiFiConfig({
+        "RT-WiFi_5FE0",
+        "Z2uQ6HHC",
+    }),
 };
