@@ -38,14 +38,10 @@ void sendResetReasonIfUnexpected() {
 }
 
 void tryConnectWithWorld() {
-  try {
-    Wifi::setup();
-    Time::sync();
-    mqtt->setup();
-    mqtt->connect();
-  } catch (...) {
-    Sleep::sleep();
-  }
+  Wifi::setup();
+  Time::sync();
+  mqtt->setup();
+  mqtt->connect();
 }
 
 /// MAIN FUNCTIONS
@@ -57,9 +53,12 @@ void setup() {
   // TODO Wifi somehow affects on polling. Check how
   auto data = pollData();
 
-  tryConnectWithWorld();
-  sendResetReasonIfUnexpected();
-  send(data);
+  try {
+    tryConnectWithWorld();
+    sendResetReasonIfUnexpected();
+    send(data);
+  } catch (...) {
+  }
 
   Led::powerOff();
   Sleep::sleep();
