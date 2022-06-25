@@ -55,7 +55,8 @@ AlertDialogContent switchFirebaseExceptionAlert(FirebaseException e) {
       return const EmptyStringAlert();
     default:
       String? message = e.message;
-      final details = (message != null) ? (e.plugin + '/' + e.code + '\n' + message) : (e.plugin + '/' + e.code);
+      final details =
+          (message != null) ? ('${e.plugin}/${e.code}\n$message') : ('${e.plugin}/${e.code}');
       return UnhandledAlert(details);
   }
 }

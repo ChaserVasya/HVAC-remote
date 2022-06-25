@@ -1,13 +1,13 @@
+// ignore_for_file: implementation_imports
+
 import 'dart:math';
 
 import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as flutter;
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart' show immutable;
 
 import 'package:charts_flutter/src/behaviors/zoom/pan_behavior.dart' as flutter;
 import 'package:charts_flutter/src/behaviors/zoom/pan_and_zoom_behavior.dart' as flutter;
-import 'package:path/path.dart';
 
 import 'common_staged_chart.dart';
 import 'package:charts_common/src/chart/cartesian/axis/time/date_time_scale.dart';

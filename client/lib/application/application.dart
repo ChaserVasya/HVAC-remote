@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hvac_remote_client/presentation/app_view_models/role.dart';
+import 'package:hvac_remote_client/presentation/view_models/role.dart';
 import 'package:hvac_remote_client/presentation/pages/before_auth/account_create/view_model.dart';
 import 'package:hvac_remote_client/presentation/pages/before_auth/signing/view_model.dart';
 import 'package:hvac_remote_client/presentation/pages/settings/change_role/view_model.dart';

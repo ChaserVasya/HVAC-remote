@@ -4,7 +4,6 @@ import 'package:charts_common/common.dart' as common show TimeSeriesChart;
 import 'package:charts_common/common.dart';
 import 'package:flutter/material.dart';
 
-import 'time_series_chart.dart';
 import 'time_series_data.dart';
 
 enum Directions {

@@ -7,7 +7,7 @@ class InitUseCase {
   InitUseCase(BuildContext context) {
     try {
       setupLocator();
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacementNamed(context, RoutesNames.enter);
       });
     } catch (e, s) {

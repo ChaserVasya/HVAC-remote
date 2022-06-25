@@ -28,7 +28,7 @@ class PageTemplate extends StatelessWidget {
           ? null
           : AppBar(
               title: Text(appBarTitle!),
-              brightness: Brightness.dark,
+              systemOverlayStyle: SystemUiOverlayStyle.light,
             ),
       body: Padding(
         padding: const EdgeInsets.all(16),
