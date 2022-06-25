@@ -4,7 +4,6 @@ import 'package:charts_common/common.dart';
 import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as flutter;
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'chart.dart';
 import 'pan_and_zoom_behaviour.dart';
