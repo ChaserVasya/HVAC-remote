@@ -1,4 +1,3 @@
-import { stringify } from "querystring";
 import { driver, initDb } from "./database";
 import { event2data } from "./mappers";
 import { insertValue } from "./queries/clients-table";
