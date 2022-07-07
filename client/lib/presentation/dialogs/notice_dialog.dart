@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hvac_remote_client/application/dialogs/content/interfaces/notice.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 
 class NoticeDialog extends AlertDialog {
   NoticeDialog(
@@ -16,18 +17,15 @@ class NoticeDialog extends AlertDialog {
           actions: [
             ElevatedButton(
               child: Text((buttonLabel == null) ? 'Продолжить' : buttonLabel),
-              onPressed: () => Navigator.pop<bool>(context, true),
+              onPressed: () => navigator.pop<bool>(true),
             ),
           ],
         );
 }
 
-Future<bool> showNoticeDialog(
-  BuildContext navigatorDescendalContext,
-  NoticeDialogContent notice,
-) async {
+Future<bool> showNoticeDialog(NoticeDialogContent notice) async {
   final result = await showDialog<bool>(
-    context: navigatorDescendalContext,
+    context: navigator.context,
     builder: (navigatorContext) => NoticeDialog(
       navigatorContext,
       notice,

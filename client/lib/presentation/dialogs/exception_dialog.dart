@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hvac_remote_client/application/dialogs/content/interfaces/alert.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 
 class ExceptionDialog extends AlertDialog {
   ExceptionDialog(
@@ -33,10 +34,9 @@ class ExceptionDialog extends AlertDialog {
 
 void showExceptionDialog(
   AlertDialogContent alert,
-  BuildContext navigatorDescendantContext,
 ) {
   showDialog(
-    context: navigatorDescendantContext,
+    context: navigator.context,
     builder: (navigatorContext) => ExceptionDialog(navigatorContext, alert),
   );
 }

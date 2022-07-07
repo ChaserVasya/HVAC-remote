@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 
 import 'package:hvac_remote_client/application/routes.dart';
 
@@ -51,7 +52,7 @@ class _RoleChange extends StatelessWidget {
         'Сменить роль с помощью пароля',
         style: TextStyle(color: Colors.black38),
       ),
-      onTap: () => Navigator.pushNamed(context, RoutesNames.roleChange),
+      onTap: () => navigator.pushNamed(RoutesNames.roleChange),
     );
   }
 }
@@ -63,7 +64,7 @@ class _ResetPassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: const Text('Сбросить пароль'),
-      onTap: () => resetPassword(context),
+      onTap: () => resetPassword(),
     );
   }
 }
@@ -75,7 +76,7 @@ class _SignOut extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: const Text('Выйти из аккаунта'),
-      onTap: () => signOut(context),
+      onTap: () => signOut(),
     );
   }
 }
@@ -87,7 +88,7 @@ class _DeleteUser extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: const Text('Удалить аккаунт', style: TextStyle(color: Colors.red)),
-      onTap: () => deleteAccount(context),
+      onTap: () => deleteAccount(),
     );
   }
 }

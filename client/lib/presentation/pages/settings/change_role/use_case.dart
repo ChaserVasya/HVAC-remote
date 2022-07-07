@@ -22,9 +22,9 @@ class ChangeRoleUseCase {
       _viewModel.state = ChangeRoleStates.changing;
       await _roleRepo.changeRole(password);
 
-      showNoticeDialog(context, const NewRoleNotice());
+      showNoticeDialog(const NewRoleNotice());
     } catch (e, s) {
-      ExceptionHandler.handle(e, s, context);
+      ExceptionHandler.handle(e, s);
     } finally {
       _viewModel.state = ChangeRoleStates.none;
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 import 'package:hvac_remote_client/application/routes.dart';
 import 'package:hvac_remote_client/presentation/templates/pushing_field.dart';
 import 'package:hvac_remote_client/presentation/templates/page_template.dart';
@@ -28,7 +29,7 @@ class AccountCreatePage extends StatelessWidget {
           const _AccountCreateFutureBuilder(),
           TextButton(
             child: const Text('Зарегистрированы? Войти'),
-            onPressed: () => Navigator.pushReplacementNamed(_pageContext, RoutesNames.signIn),
+            onPressed: () => navigator.pushReplacementNamed(RoutesNames.signIn),
           ),
         ],
       ),

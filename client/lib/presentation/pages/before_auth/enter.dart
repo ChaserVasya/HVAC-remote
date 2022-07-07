@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 import 'package:hvac_remote_client/application/routes.dart';
 import 'package:hvac_remote_client/presentation/templates/faded_logo.dart';
 import 'package:hvac_remote_client/presentation/templates/page_template.dart';
@@ -21,10 +22,10 @@ class EnterPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   child: const Text('Войти'),
-                  onPressed: () => Navigator.pushReplacementNamed(context, RoutesNames.signIn),
+                  onPressed: () => navigator.pushReplacementNamed(RoutesNames.signIn),
                 ),
                 OutlinedButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, RoutesNames.accountCreate),
+                  onPressed: () => navigator.pushReplacementNamed(RoutesNames.accountCreate),
                   child: const Text('Зарегистрироваться'),
                 ),
               ],

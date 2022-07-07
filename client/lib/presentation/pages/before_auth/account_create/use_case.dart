@@ -19,13 +19,14 @@ class AccountCreateUseCase {
 
   final AuthService _auth = AuthService();
 
-  Future<void> createAccount(String email, String password, String repeated, BuildContext context) async {
+  Future<void> createAccount(
+      String email, String password, String repeated, BuildContext context) async {
     try {
       _viewModel.state = AccountCreateStates.creating;
       await _auth.createAccount(email, password, repeated);
-      showNoticeDialog(context, const SuccessfulAccountCreateNotice());
+      showNoticeDialog(const SuccessfulAccountCreateNotice());
     } catch (e, s) {
-      ExceptionHandler.handle(e, s, context);
+      ExceptionHandler.handle(e, s);
     } finally {
       _viewModel.state = AccountCreateStates.none;
     }

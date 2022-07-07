@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 import 'package:hvac_remote_client/presentation/templates/page_template.dart';
 
 class PushingField extends StatelessWidget {
@@ -78,7 +79,7 @@ class _TextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       autofocus: (isPushedFieldPage) ? true : false,
-      onEditingComplete: (isPushedFieldPage) ? (() => Navigator.pop(context)) : null,
+      onEditingComplete: (isPushedFieldPage) ? (() => navigator.pop(context)) : null,
       onTap: (isPushedFieldPage) ? null : (() => _pushPushedFieldPage(context)),
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
@@ -91,8 +92,7 @@ class _TextFormField extends StatelessWidget {
   }
 
   void _pushPushedFieldPage(BuildContext context) {
-    Navigator.push(
-      context,
+    navigator.push(
       MaterialPageRoute<void>(
         builder: (_) => PushedFieldPage(labelText, controller),
       ),

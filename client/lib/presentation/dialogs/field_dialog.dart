@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hvac_remote_client/application/dialogs/content/interfaces/field.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 import 'package:hvac_remote_client/presentation/templates/field_template.dart';
 
 class FieldDialog extends StatelessWidget {
@@ -29,14 +30,14 @@ class FieldDialog extends StatelessWidget {
               FieldTemplate(
                 labelText: content.labelText,
                 controller: controller,
-                onEditingComplete: () => Navigator.pop<String>(context, controller.text),
+                onEditingComplete: () => navigator.pop<String>(controller.text),
               ),
             ],
           ),
           actions: [
             ElevatedButton(
               child: Text(content.buttonText),
-              onPressed: () => Navigator.pop<String>(context, controller.text),
+              onPressed: () => navigator.pop<String>(controller.text),
             ),
           ],
         ),
@@ -46,11 +47,10 @@ class FieldDialog extends StatelessWidget {
 }
 
 Future<String?> showFieldDialog(
-  BuildContext navigatorDescendalContext,
   FieldDialogContent content,
 ) async {
   return showDialog<String?>(
-    context: navigatorDescendalContext,
+    context: navigator.context,
     builder: (_) => FieldDialog(content),
   );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 import 'package:hvac_remote_client/presentation/view_models/role.dart';
 import 'package:hvac_remote_client/presentation/pages/before_auth/account_create/view_model.dart';
 import 'package:hvac_remote_client/presentation/pages/before_auth/signing/view_model.dart';
@@ -17,6 +18,7 @@ class Application extends StatelessWidget {
     return MultiProvider(
       providers: _providers,
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'HVAC remote',
         initialRoute: RoutesNames.init,
         routes: routes,

@@ -6,8 +6,8 @@ import 'package:hvac_remote_client/presentation/templates/page_template.dart';
 import 'use_case.dart';
 
 class InitPage extends StatefulWidget {
-  InitPage(BuildContext context, {Key? key}) : super(key: key) {
-    InitUseCase(context);
+  InitPage({Key? key}) : super(key: key) {
+    InitUseCase();
   }
 
   @override
