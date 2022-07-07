@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 import 'package:hvac_remote_client/application/routes.dart';
 
 class PageTemplate extends StatelessWidget {
@@ -86,7 +87,7 @@ class _ListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(iconData),
-      onTap: () => Navigator.pushNamed(context, routeName),
+      onTap: () => navigator.pushNamed(routeName),
       title: Text(
         text,
         textAlign: TextAlign.left,

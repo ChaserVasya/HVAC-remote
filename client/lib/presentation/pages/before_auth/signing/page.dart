@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hvac_remote_client/application/navigator.dart';
 import 'package:hvac_remote_client/application/routes.dart';
 import 'package:hvac_remote_client/presentation/scripts/auth.dart';
 import 'package:hvac_remote_client/presentation/templates/pushing_field.dart';
@@ -29,11 +30,11 @@ class SigningPage extends StatelessWidget {
             children: [
               TextButton(
                 child: const Text('Нет аккаунта? Зарегистрироваться'),
-                onPressed: () => Navigator.pushReplacementNamed(context, RoutesNames.accountCreate),
+                onPressed: () => navigator.pushReplacementNamed(RoutesNames.accountCreate),
               ),
               TextButton(
                 child: const Text('Сбросить пароль'),
-                onPressed: () => resetPassword(context),
+                onPressed: () => resetPassword(),
               ),
             ],
           ),
@@ -83,7 +84,6 @@ class _None extends StatelessWidget {
             _pageContext.read<SigningViewModel>().signIn(
                   emailController.text,
                   passwordController.text,
-                  _pageContext,
                 );
           },
           child: const Text('Войти'),

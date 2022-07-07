@@ -16,7 +16,7 @@ class SigningViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void signIn(String email, String password, BuildContext context) {
-    _useCase.signIn(email, password, context);
+  void signIn(String email, String password) {
+    _useCase.signIn(email, password);
   }
 }

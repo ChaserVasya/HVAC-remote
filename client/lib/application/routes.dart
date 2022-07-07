@@ -9,7 +9,7 @@ import 'package:hvac_remote_client/presentation/pages/settings/settings/page.dar
 
 Map<String, Widget Function(BuildContext)> routes = {
   // before auth
-  RoutesNames.init: (context) => InitPage(context),
+  RoutesNames.init: (_) => InitPage(),
   RoutesNames.enter: (_) => const EnterPage(),
   RoutesNames.signIn: (_) => const SigningPage(),
   RoutesNames.accountCreate: (_) => const AccountCreatePage(),
