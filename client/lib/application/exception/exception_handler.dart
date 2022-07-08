@@ -1,8 +1,8 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:hvac_remote_client/application/dialogs/content/alert/common.dart';
-import 'package:hvac_remote_client/application/dialogs/logic/alert/main_switch.dart';
+import 'package:hvac_remote_client/application/dialog/content/alert/common.dart';
+import 'package:hvac_remote_client/application/dialog/logic/alert/main_switch.dart';
 
-import '../../presentation/dialogs/exception_dialog.dart';
+import '../../presentation/dialog/exception_dialog.dart';
 
 class ExceptionHandler {
   ExceptionHandler._();

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hvac_remote_client/presentation/pages/before_auth/account_create/page.dart';
-import 'package:hvac_remote_client/presentation/pages/before_auth/enter.dart';
-import 'package:hvac_remote_client/presentation/pages/before_auth/init/page.dart';
-import 'package:hvac_remote_client/presentation/pages/before_auth/signing/page.dart';
-import 'package:hvac_remote_client/presentation/pages/common/home.dart';
-import 'package:hvac_remote_client/presentation/pages/settings/change_role/page.dart';
-import 'package:hvac_remote_client/presentation/pages/settings/settings/page.dart';
+import 'package:hvac_remote_client/presentation/page/before_auth/account_create/page.dart';
+import 'package:hvac_remote_client/presentation/page/before_auth/enter.dart';
+import 'package:hvac_remote_client/presentation/page/before_auth/init/page.dart';
+import 'package:hvac_remote_client/presentation/page/before_auth/signing/page.dart';
+import 'package:hvac_remote_client/presentation/page/common/home.dart';
+import 'package:hvac_remote_client/presentation/page/settings/change_role/page.dart';
+import 'package:hvac_remote_client/presentation/page/settings/settings/page.dart';
 
 Map<String, Widget Function(BuildContext)> routes = {
   // before auth
