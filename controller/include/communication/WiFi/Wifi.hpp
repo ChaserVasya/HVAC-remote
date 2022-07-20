@@ -15,6 +15,8 @@ class Wifi {
   static bool isConnected() { return WiFi.isConnected(); }
 
   static void setup() {
+    Logger::debugln(String("WiFi: setup"));
+
     WiFi.mode(WIFI_STA);
 
     for (const auto conf : wifiConfigs) {

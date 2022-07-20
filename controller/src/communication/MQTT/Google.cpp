@@ -35,6 +35,8 @@ CloudIoTCoreMqtt *MQTT::mqtt = nullptr;
 CloudIoTCoreDevice *MQTT::device = nullptr;
 
 void MQTT::setup() {
+  Logger::debugln(F("MQTT: Setup: configuring"));
+
   mqttClient = new MQTTClient(1000);
   netClient = new WiFiClientSecure;
   device = new CloudIoTCoreDevice("snappy-provider-295713", "asia-east1", "mqtt-registry", "controller");
@@ -47,6 +49,8 @@ void MQTT::setup() {
   mqtt = new CloudIoTCoreMqtt(mqttClient, netClient, device);
   mqtt->setUseLts(true);
   mqtt->startMQTTAdvanced();
+
+  Logger::debugln(F("MQTT: Setup: configured"));
 }
 
 void MQTT::setupSecurity() {

@@ -4,7 +4,7 @@
 #include "../VoltageDivider.hpp"
 
 class BatteryVoltageSensor : public AnalogSensor {
-  uint8_t pin() override { return 36; };
+  uint8_t pin() override { return 34; };
 
   VoltageDivider divider;
 

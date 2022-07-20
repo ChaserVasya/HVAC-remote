@@ -6,7 +6,7 @@
 class LightSensor : public AnalogSensor {
   VoltageDivider divider;
 
-  uint8_t pin() override { return 33; };
+  uint8_t pin() override { return 35; };
 
   double voltage2Value(const double voltage) override {
     uint32_t empiricalSelectedFactor = 10000000;

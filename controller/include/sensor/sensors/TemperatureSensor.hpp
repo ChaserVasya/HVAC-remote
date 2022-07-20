@@ -14,7 +14,7 @@ class TemperatureSensor : public AnalogSensor {
 
  private:
   VoltageDivider divider;
-  uint8_t pin() override { return 34; };
+  uint8_t pin() override { return 32; };
 
   double voltage2Value(const double voltage) override {
     divider.Vout(voltage);
