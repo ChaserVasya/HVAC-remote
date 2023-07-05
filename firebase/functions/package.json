@@ -14,7 +14,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@google-cloud/iot": "2.3.2",
+    "@google-cloud/iot": "3.2.3",
     "firebase-admin": "^11.4.1",
     "firebase-functions": "^3.24.1"
   },
